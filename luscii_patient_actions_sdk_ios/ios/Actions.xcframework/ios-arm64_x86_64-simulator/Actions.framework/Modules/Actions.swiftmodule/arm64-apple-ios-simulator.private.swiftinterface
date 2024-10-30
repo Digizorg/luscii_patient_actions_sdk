@@ -1,0 +1,173 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios14.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name Actions
+import AVFoundation
+import AVKit
+import Combine
+import DeveloperToolsSupport
+import Foundation
+import HealthKit
+import MobileCoreServices
+import PhotosUI
+import SafariServices
+import Swift
+import SwiftUI
+import UIKit
+import UniformTypeIdentifiers
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+@available(*, deprecated, message: "This object is deprecated and will be removed in upcoming version. Use `Luscii` object instead.")
+public struct ActionsBuilder {
+  public init()
+  @available(*, deprecated, message: "This function is deprecated and will be removed in upcoming version. Use `makeActionsViewController` on `Luscii` object instead.")
+  public func makeViewController() -> UIKit.UIViewController
+}
+public struct ActionFlowResult : Swift.Hashable {
+  public let actionID: Foundation.UUID
+  public let status: Actions.ActionFlowResult.Status
+  public enum Status : Swift.Hashable {
+    case completed
+    case cancelled
+    case error((any Swift.Error)?)
+    public static func == (lhs: Actions.ActionFlowResult.Status, rhs: Actions.ActionFlowResult.Status) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: Actions.ActionFlowResult, b: Actions.ActionFlowResult) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#warning("Missing VitalsRequest")
+#warning("Device Flow disabled")
+extension Foundation.NSNotification.Name {
+  public static let actionFlowFinished: Foundation.NSNotification.Name
+}
+public enum ActionsNotificationUserInfoKey : Swift.Hashable {
+  public static let actionFlowResult: Swift.String
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: Actions.ActionsNotificationUserInfoKey, b: Actions.ActionsNotificationUserInfoKey) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#warning("No Vitals Request present in the package, use HTTPii to replace it.")
+extension UIKit.UIViewController {
+  #warning("Bluetooth wrapping missing or something")
+}
+#warning("Gotta replace Vitals Request")
+final public class Luscii {
+  public init()
+  convenience public init(configuration: Actions.LusciiConfiguration)
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func authenticate(apiKey: Swift.String) async throws
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  @available(*, deprecated, message: "Might get removed in next version. Use 'authenticate(apiKey:)' instead.")
+  final public func authenticate() async throws
+  #endif
+  final public func makeActionsViewController() -> UIKit.UIViewController
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func actions() async throws -> [Actions.Action]
+  #endif
+  final public func launchActionFlow(for action: Actions.Action, on viewController: UIKit.UIViewController) throws
+  @objc deinit
+}
+#warning("Need to convert Vitals Request")
+public struct LusciiAuthenticationError : Swift.Hashable, Swift.Error {
+  public enum Reason : Swift.String, Swift.Hashable {
+    case invalidAPIKey
+    case unauthorized
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public enum Context : Swift.String, Swift.Hashable {
+    case nonPatientAPIKey
+    case missingAuthentication
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public let reason: Actions.LusciiAuthenticationError.Reason
+  public let context: Actions.LusciiAuthenticationError.Context?
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: Actions.LusciiAuthenticationError, b: Actions.LusciiAuthenticationError) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#warning("No Vitals Request present in the package, use HTTPii to replace it.")
+#warning("No Vitals Request present in the package, use HTTPii to replace it.")
+#warning("Need resolve VitalsRequest")
+#warning("Need resolve VitalsRequest")
+public struct Action : Swift.Hashable {
+  public let id: Foundation.UUID
+  public let name: Swift.String
+  public let icon: Foundation.URL?
+  public let completedAt: Foundation.Date?
+  public var launchableStatus: Actions.Action.LaunchableStatus {
+    get
+  }
+  public var isLaunchable: Swift.Bool {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: Actions.Action, b: Actions.Action) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension Actions.Action {
+  public enum LaunchableStatus : Swift.Hashable {
+    case launchable
+    case completed(Foundation.Date)
+    case after(Foundation.Date)
+    case before(Foundation.Date)
+    public func hash(into hasher: inout Swift.Hasher)
+    public static func == (a: Actions.Action.LaunchableStatus, b: Actions.Action.LaunchableStatus) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class ActionsCell : UIKit.UICollectionViewListCell {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+#warning("Missing VitalsRequest")
+public struct ActionsError : Swift.Error, Swift.Hashable {
+  public enum Reason {
+    case notLaunchable
+    public static func == (a: Actions.ActionsError.Reason, b: Actions.ActionsError.Reason) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public let reason: Actions.ActionsError.Reason
+  public let action: Actions.Action?
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: Actions.ActionsError, b: Actions.ActionsError) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct LusciiConfiguration {
+  public let patientAPIKey: Swift.String?
+  public let refreshToken: Swift.String?
+  public init(patientAPIKey: Swift.String? = nil, refreshToken: Swift.String? = nil)
+}
+extension Actions.LusciiAuthenticationError.Reason : Swift.RawRepresentable {}
+extension Actions.LusciiAuthenticationError.Context : Swift.RawRepresentable {}
+extension Actions.ActionsError.Reason : Swift.Equatable {}
+extension Actions.ActionsError.Reason : Swift.Hashable {}

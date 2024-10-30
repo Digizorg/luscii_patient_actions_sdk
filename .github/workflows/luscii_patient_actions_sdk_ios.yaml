@@ -1,0 +1,26 @@
+name: luscii_patient_actions_sdk_ios
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/luscii_patient_actions_sdk_ios.yaml"
+      - "luscii_patient_actions_sdk_ios/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/luscii_patient_actions_sdk_ios.yaml"
+      - "luscii_patient_actions_sdk_ios/**"
+
+jobs:
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      flutter_channel: stable
+      flutter_version: 3.24.0
+      working_directory: luscii_patient_actions_sdk_ios
+

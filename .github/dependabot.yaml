@@ -1,0 +1,27 @@
+version: 2
+enable-beta-ecosystems: true
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pub"
+    directory: "/luscii_patient_actions_sdk"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pub"
+    directory: "/luscii_patient_actions_sdk/example"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pub"
+    directory: "/luscii_patient_actions_sdk_platform_interface"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pub"
+    directory: "/luscii_patient_actions_sdk_android"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "pub"
+    directory: "/luscii_patient_actions_sdk_ios"
+    schedule:
+      interval: "daily"
