@@ -65,7 +65,7 @@ class LusciiAction {
       icon: icon,
       completedAt: map['completedAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(
-              (map['completedAt'] as num).toInt() * 1000,
+              (map['completedAt'] as double).toInt() * 1000,
             )
           : null,
       launchableStatus: _parseLaunchableStatus(launchableStatus),
@@ -109,7 +109,7 @@ class LusciiAction {
   }
 
   static DateTime _parseDateFromStatus(String status) {
-    final timestamp = int.parse(status.split(':')[1]);
+    final timestamp = double.parse(status.split(':')[1]).toInt();
     return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
   }
 }
