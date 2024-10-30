@@ -11,31 +11,43 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/Digizorg/luscii_patient_actions_sdk'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Digizorg' => 'info@digizorg.app' }
-  s.source           = { :path => '.' }  
-  s.source_files = 'Classes/**/*'
-  s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
-
-  # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.swift_version = '5.0'
+  s.source           = { :path => '.' }
+  s.source_files     = 'Classes/**/*'
+  s.dependency       'Flutter'
+  s.platform         = :ios, '13.0'
+  s.swift_version    = '5.0'
 
   # Specify the version of Actions you want to include
   actions_version = '1.2.0'
 
-  # The version of Actions depends on dependencies, lets include them here
-  s.dependency 'RxSwift', '~> 6.8.0'
-  s.dependency 'RxCocoa', '~> 6.8.0'
+  # Specify the version of RxSwift libraries to include
+  rx_version = '6.6.0'
 
-  # Download and unzip the Actions.xcframework during the prepare phase
+  # Download and unzip the Actions.xcframework and RxSwift frameworks during the prepare phase
   s.prepare_command = <<-CMD
+    # Download Actions.xcframework
     curl -L -o Actions.xcframework.zip https://github.com/Luscii/actions-sdk-ios/releases/download/#{actions_version}/Actions.xcframework.zip
     unzip -o Actions.xcframework.zip
     rm Actions.xcframework.zip
+
+    # Download RxSwift.xcframework
+    curl -L -o RxSwift.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxSwift.xcframework.zip
+    unzip -o RxSwift.xcframework.zip
+    rm RxSwift.xcframework.zip
+
+    # Download RxCocoa.xcframework
+    curl -L -o RxCocoa.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxCocoa.xcframework.zip
+    unzip -o RxCocoa.xcframework.zip
+    rm RxCocoa.xcframework.zip
+
+    # Download RxRelay.xcframework
+    curl -L -o RxRelay.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxRelay.xcframework.zip
+    unzip -o RxRelay.xcframework.zip
+    rm RxRelay.xcframework.zip
   CMD
 
-  # Include the Actions.xcframework as a vendored framework
-  s.vendored_frameworks = 'Actions.xcframework'
+  # Include the frameworks as vendored frameworks
+  s.vendored_frameworks = 'Actions.xcframework', 'RxSwift.xcframework', 'RxCocoa.xcframework', 'RxRelay.xcframework'
 
   # Specify that this pod builds a static framework to prevent multiple embeddings
   s.static_framework = true
