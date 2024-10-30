@@ -23,10 +23,6 @@ Pod::Spec.new do |s|
   # Specify the version of Actions you want to include
   actions_version = '1.2.0'
 
-  # The version of Actions depends on dependencies, lets include them here
-  s.dependency 'RxSwift', '~> 6.8.0'
-  s.dependency 'RxCocoa', '~> 6.8.0'
-
   # Download and unzip the Actions.xcframework during the prepare phase
   s.prepare_command = <<-CMD
     curl -L -o Actions.xcframework.zip https://github.com/Luscii/actions-sdk-ios/releases/download/#{actions_version}/Actions.xcframework.zip
@@ -35,10 +31,14 @@ Pod::Spec.new do |s|
   CMD
 
   # Include the Actions.xcframework as a vendored framework
-  s.vendored_frameworks = 'Actions.xcframework'
+  s.vendored_frameworks = [
+    'Actions.xcframework',
+    'Frameworks/RxSwift.xcframework',
+    'Frameworks/RxRelay.xcframework'
+  ]
 
   # Specify that this pod builds a static framework to prevent multiple embeddings
-  s.static_framework = true
+  s.static_framework = false
 
   # Exclude i386 architecture for simulator builds
   s.pod_target_xcconfig = {
