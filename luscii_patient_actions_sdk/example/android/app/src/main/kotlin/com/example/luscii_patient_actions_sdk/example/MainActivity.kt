@@ -1,6 +1,8 @@
 package nl.digizorg.example
 
-import io.flutter.embedding.android.FlutterActivity
+import dagger.hilt.android.AndroidEntryPoint
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity: FlutterActivity() {
+@AndroidEntryPoint
+class MainActivity: FlutterFragmentActivity() {
 }

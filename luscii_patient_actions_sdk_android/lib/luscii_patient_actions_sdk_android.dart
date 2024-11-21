@@ -16,9 +16,11 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<void> authenticate(String apiKey) {
-    // TODO: implement authenticate
-    throw UnimplementedError();
+  Future<void> authenticate(String apiKey) async {
+    await methodChannel.invokeMethod<Map<String, dynamic>>(
+      'authenticate',
+      apiKey,
+    );
   }
 
   @override

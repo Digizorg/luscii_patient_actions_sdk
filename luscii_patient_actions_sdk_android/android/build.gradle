@@ -1,6 +1,8 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 group 'nl.digizorg'
@@ -35,12 +37,19 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 26
     }
 
     dependencies {
+        implementation("com.luscii:sdk:0.3.16")
+        implementation "com.google.dagger:hilt-android:2.51.1"
+        kapt "com.google.dagger:hilt-compiler:2.51.1"
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.mockito:mockito-core:5.0.0'
+    }
+
+    kapt {
+        correctErrorTypes = true
     }
 
     testOptions {
