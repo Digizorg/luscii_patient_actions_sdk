@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart';
 
 /// The Android implementation of [LusciiPatientActionsSdkPlatform].
@@ -24,15 +25,27 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getActions() {
-    // TODO: implement getActions
-    throw UnimplementedError();
+  Future<List<dynamic>> getActions() async {
+    final actions = await methodChannel.invokeMethod<List<dynamic>>(
+      'getActions',
+    );
+
+    if (actions is! List) {
+      throw LusciiSdkException(
+        reason: 'Invalid response from native platform',
+      );
+    }
+    return actions;
   }
 
   @override
-  Future<void> launchAction(String actionId) {
-    // TODO: implement launchAction
-    throw UnimplementedError();
+  Future<void> launchAction(
+    String actionId,
+  ) async {
+    await methodChannel.invokeMethod<Map<String, dynamic>>(
+      'launchAction',
+      actionId,
+    );
   }
 
   @override

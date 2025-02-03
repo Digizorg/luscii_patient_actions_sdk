@@ -41,11 +41,12 @@ android {
     }
 
     dependencies {
-        implementation("com.luscii:sdk:0.3.16")
-        implementation "com.google.dagger:hilt-android:2.51.1"
-        kapt "com.google.dagger:hilt-compiler:2.51.1"
+        implementation("com.luscii:sdk:0.3.18")
+        implementation "com.google.dagger:hilt-android:2.55"
+        implementation "androidx.fragment:fragment-ktx:1.8.5"
+        kapt "com.google.dagger:hilt-compiler:2.55"
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
-        testImplementation 'org.mockito:mockito-core:5.0.0'
+        testImplementation 'org.mockito:mockito-core:5.12.0'
     }
 
     kapt {
