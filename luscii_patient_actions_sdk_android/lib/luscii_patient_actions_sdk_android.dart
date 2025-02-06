@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart';
 
 /// The Android implementation of [LusciiPatientActionsSdkPlatform].
@@ -8,6 +9,10 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   @visibleForTesting
   final methodChannel =
       const MethodChannel('luscii_patient_actions_sdk_android');
+
+  @visibleForTesting
+  final eventChannel =
+      const EventChannel('luscii_patient_actions_sdk_android/events');
 
   /// Registers this class as the default
   /// instance of [LusciiPatientActionsSdkPlatform]
@@ -24,20 +29,33 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getActions() {
-    // TODO: implement getActions
-    throw UnimplementedError();
+  Future<List<dynamic>> getActions() async {
+    final actions = await methodChannel.invokeMethod<List<dynamic>>(
+      'getActions',
+    );
+
+    if (actions is! List) {
+      throw LusciiSdkException(
+        reason: 'Invalid response from native platform',
+      );
+    }
+    return actions;
   }
 
   @override
-  Future<void> launchAction(String actionId) {
-    // TODO: implement launchAction
-    throw UnimplementedError();
+  Future<void> launchAction(
+    String actionId,
+  ) async {
+    await methodChannel.invokeMethod<Map<String, dynamic>>(
+      'launchAction',
+      actionId,
+    );
   }
 
   @override
   Stream<Map<String, dynamic>> actionFlowStream() {
-    // TODO: implement actionFlowStream
-    throw UnimplementedError();
+    return eventChannel.receiveBroadcastStream().map((event) {
+      return Map<String, dynamic>.from(event as Map);
+    });
   }
 }

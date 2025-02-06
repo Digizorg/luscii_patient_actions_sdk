@@ -25,11 +25,15 @@ android {
         // The Luscii SDK requires 26
         minSdkVersion 26
     }
+    buildFeatures {
+      dataBinding = true
+	}
 }
+    
 dependencies {
 	// All your current dependencies
-	implementation "com.google.dagger:hilt-android:2.51.1"
-	kapt "com.google.dagger:hilt-compiler:2.51.1"
+	implementation "com.google.dagger:hilt-android:2.55"
+	kapt "com.google.dagger:hilt-compiler:2.55"
 }
 kapt {
     correctErrorTypes = true
@@ -111,9 +115,9 @@ We are currently developing the Android side.
 | Function               | iOS Support | Android Support |
 |------------------------|-------------|-----------------|
 | `authenticate(String apiKey)` | ✅           | ✅               |
-| `getActions()`         | ✅           | ❌               |
-| `launchAction(String actionId)` | ✅           | ❌               |
-| `actionFlowStream()`   | ✅           | ❌               |
+| `getActions()`         | ✅           | ✅               |
+| `launchAction(String actionId)` | ✅           | ✅               |
+| `actionFlowStream()`   | ✅           | ✅               |
 
 
 ### Integration tests 🧪
