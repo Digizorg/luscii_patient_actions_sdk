@@ -7,7 +7,7 @@ fun Action.toMap(): Map<String, Any?> {
         "id" to id.toString(),
         "name" to name,
         "icon" to icon?.toString(), // Convert URL to string
-        "completedAt" to completedAt?.toEpochSecond(), // Convert ZonedDateTime to timestamp (seconds since epoch)
+        "completedAt" to completedAt?.toInstant()?.toEpochMilli()?.toDouble(), // Convert ZonedDateTime to timestamp (seconds since epoch)
         "launchableStatus" to serializeLaunchableStatus(),
         "isLaunchable" to isLaunchable()
     )

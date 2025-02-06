@@ -116,8 +116,8 @@ We are currently developing the Android side.
 |------------------------|-------------|-----------------|
 | `authenticate(String apiKey)` | ✅           | ✅               |
 | `getActions()`         | ✅           | ✅               |
-| `launchAction(String actionId)` | ✅           | 🚧               |
-| `actionFlowStream()`   | ✅           | ❌               |
+| `launchAction(String actionId)` | ✅           | ✅               |
+| `actionFlowStream()`   | ✅           | ✅               |
 
 
 ### Integration tests 🧪

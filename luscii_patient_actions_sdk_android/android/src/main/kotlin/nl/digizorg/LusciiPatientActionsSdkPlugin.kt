@@ -24,10 +24,15 @@ import nl.digizorg.extensions.toMap
 import nl.digizorg.hilt.LusciiEntryPoint
 import javax.inject.Singleton
 import androidx.fragment.app.commit
+import io.flutter.plugin.common.EventChannel
+import nl.digizorg.event.EventHandler
 
 
 class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
+
+    private lateinit var eventChannel: EventChannel
+    private lateinit var eventHandler: EventHandler
 
     private lateinit var luscii: Luscii
 
@@ -36,6 +41,10 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "luscii_patient_actions_sdk_android")
         channel.setMethodCallHandler(this)
+
+        eventHandler = EventHandler()
+        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "luscii_patient_actions_sdk_android/events")
+        eventChannel.setStreamHandler(eventHandler)
 
         val appContext = flutterPluginBinding.applicationContext
 
@@ -141,7 +150,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         withContext(Dispatchers.Main) {
                             (activity as FragmentActivity).supportFragmentManager.apply {
                                 setActionFlowFragmentResultListener((activity as FragmentActivity)) {
-                                    // Handle result, see further down in the instructions for details.
+                                    eventHandler.handleActionFlowResult(it)
                                 }
 
                                 commit {

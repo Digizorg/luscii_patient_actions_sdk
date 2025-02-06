@@ -41,16 +41,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // luscii_sdk.actionFlowStream().listen((event) {
-    //   debugPrint('Action stream event: $event');
-    //   switch (event) {
-    //     case LusciiSuccess(value: final value):
-    //       debugPrint(value.actionId);
-    //       debugPrint(value.status.toString());
-    //     case LusciiFailure(exception: final exception):
-    //       debugPrint('Action stream failure: $exception');
-    //   }
-    // });
+    luscii_sdk.actionFlowStream().listen((event) {
+      debugPrint('Action stream event: $event');
+      switch (event) {
+        case LusciiSuccess(value: final value):
+          debugPrint(value.actionId);
+          debugPrint(value.status.toString());
+        case LusciiFailure(exception: final exception):
+          debugPrint('Action stream failure: $exception');
+      }
+    });
   }
 
   Future<void> getActions() async {

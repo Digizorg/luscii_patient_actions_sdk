@@ -10,6 +10,10 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   final methodChannel =
       const MethodChannel('luscii_patient_actions_sdk_android');
 
+  @visibleForTesting
+  final eventChannel =
+      const EventChannel('luscii_patient_actions_sdk_android/events');
+
   /// Registers this class as the default
   /// instance of [LusciiPatientActionsSdkPlatform]
   static void registerWith() {
@@ -50,7 +54,8 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
 
   @override
   Stream<Map<String, dynamic>> actionFlowStream() {
-    // TODO: implement actionFlowStream
-    throw UnimplementedError();
+    return eventChannel.receiveBroadcastStream().map((event) {
+      return Map<String, dynamic>.from(event as Map);
+    });
   }
 }
