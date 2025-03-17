@@ -3,16 +3,16 @@ import 'package:luscii_patient_actions_sdk/luscii_patient_actions_sdk.dart'
     as luscii_sdk;
 import 'package:luscii_patient_actions_sdk/model/luscii_action.dart';
 import 'package:luscii_patient_actions_sdk/model/luscii_launchable_status.dart';
-import 'package:luscii_patient_actions_sdk/result/luscii_result.dart';
+import 'package:luscii_patient_actions_sdk/result/luscii_sdk_result.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final lusciiPatientActionsSdk = await luscii_sdk.authenticate(
     '<API_KEY>',
   );
-  if (lusciiPatientActionsSdk is LusciiSuccess) {
+  if (lusciiPatientActionsSdk is LusciiSdkSuccess) {
     debugPrint('Authenticated successfully');
-  } else if (lusciiPatientActionsSdk is LusciiFailure) {
+  } else if (lusciiPatientActionsSdk is LusciiSdkFailure) {
     debugPrint('Authentication failed');
     debugPrint('Error: $lusciiPatientActionsSdk');
   }
@@ -44,10 +44,10 @@ class _HomePageState extends State<HomePage> {
     luscii_sdk.actionFlowStream().listen((event) {
       debugPrint('Action stream event: $event');
       switch (event) {
-        case LusciiSuccess(value: final value):
+        case LusciiSdkSuccess(value: final value):
           debugPrint(value.actionId);
           debugPrint(value.status.toString());
-        case LusciiFailure(exception: final exception):
+        case LusciiSdkFailure(exception: final exception):
           debugPrint('Action stream failure: $exception');
       }
     });
@@ -56,11 +56,11 @@ class _HomePageState extends State<HomePage> {
   Future<void> getActions() async {
     final result = await luscii_sdk.getActions();
     switch (result) {
-      case LusciiSuccess(value: final actions):
+      case LusciiSdkSuccess(value: final actions):
         setState(() {
           this.actions = actions;
         });
-      case LusciiFailure(exception: final exception):
+      case LusciiSdkFailure(exception: final exception):
         debugPrint('Failed to get actions');
         debugPrint(exception.reason);
     }
