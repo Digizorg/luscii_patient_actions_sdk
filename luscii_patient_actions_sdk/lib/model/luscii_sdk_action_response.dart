@@ -1,16 +1,16 @@
 import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 
 /// The response of a Luscii action.
-class LusciiActionResponse {
-  /// Creates a new [LusciiActionResponse] with the
+class LusciiSdkActionResponse {
+  /// Creates a new [LusciiSdkActionResponse] with the
   /// given [actionId] and [status].
-  LusciiActionResponse({
+  LusciiSdkActionResponse({
     required this.actionId,
     required this.status,
   });
 
-  /// Creates a new [LusciiActionResponse] from a map.
-  factory LusciiActionResponse.fromMap(Map<dynamic, dynamic> map) {
+  /// Creates a new [LusciiSdkActionResponse] from a map.
+  factory LusciiSdkActionResponse.fromMap(Map<dynamic, dynamic> map) {
     // Assign values to explicitly typed variables
     final actionId = map['actionID'] as String?;
     final status = map['status'] as String?;
@@ -35,11 +35,11 @@ class LusciiActionResponse {
       throw LusciiSdkException(reason: status);
     }
 
-    return LusciiActionResponse(
+    return LusciiSdkActionResponse(
       actionId: actionId,
       status: status == 'completed'
-          ? LusciiActionResponseStatus.completed
-          : LusciiActionResponseStatus.cancelled,
+          ? LusciiSdkActionResponseStatus.completed
+          : LusciiSdkActionResponseStatus.cancelled,
     );
   }
 
@@ -47,11 +47,11 @@ class LusciiActionResponse {
   final String actionId;
 
   /// The status of the action.
-  final LusciiActionResponseStatus status;
+  final LusciiSdkActionResponseStatus status;
 }
 
 /// The status of a Luscii action response.
-enum LusciiActionResponseStatus {
+enum LusciiSdkActionResponseStatus {
   /// The action is completed
   completed,
 

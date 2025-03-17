@@ -1,10 +1,10 @@
 import 'package:luscii_patient_actions_sdk/model/luscii_launchable_status.dart';
 
 /// A Luscii action coming from the Luscii SDK.
-class LusciiAction {
-  /// Creates a new [LusciiAction] with the given [id], [name],
+class LusciiSdkAction {
+  /// Creates a new [LusciiSdkAction] with the given [id], [name],
   /// [launchableStatus], and [isLaunchable].
-  LusciiAction({
+  LusciiSdkAction({
     required this.id,
     required this.name,
     required this.launchableStatus,
@@ -13,8 +13,8 @@ class LusciiAction {
     this.completedAt,
   });
 
-  /// Creates a new [LusciiAction] from the given [map].
-  factory LusciiAction.fromMap(Map<dynamic, dynamic> map) {
+  /// Creates a new [LusciiSdkAction] from the given [map].
+  factory LusciiSdkAction.fromMap(Map<dynamic, dynamic> map) {
     // Assign values to explicitly typed variables
     final id = map['id'] as String?;
     final name = map['name'] as String?;
@@ -59,7 +59,7 @@ class LusciiAction {
       );
     }
 
-    return LusciiAction(
+    return LusciiSdkAction(
       id: id,
       name: name,
       icon: icon,
@@ -86,24 +86,24 @@ class LusciiAction {
   final DateTime? completedAt;
 
   /// The status of the action.
-  final LusciiLaunchableStatus launchableStatus;
+  final LusciiSdkLaunchableStatus launchableStatus;
 
   /// Whether the action is launchable.
   final bool isLaunchable;
 
   // Helper method to parse the launchableStatus
-  static LusciiLaunchableStatus _parseLaunchableStatus(String status) {
+  static LusciiSdkLaunchableStatus _parseLaunchableStatus(String status) {
     if (status == 'launchable') {
-      return LaunchableStatusLaunchable();
+      return LaunchableSdkStatusLaunchable();
     }
 
     final date = _parseDateFromStatus(status);
     if (status.startsWith('completed:')) {
-      return LaunchableStatusCompleted(date);
+      return LaunchableSdkStatusCompleted(date);
     } else if (status.startsWith('after:')) {
-      return LaunchableStatusAfter(date);
+      return LaunchableSdkStatusAfter(date);
     } else if (status.startsWith('before:')) {
-      return LaunchableStatusBefore(date);
+      return LaunchableSdkStatusBefore(date);
     }
     throw Exception('Unknown LaunchableStatus: $status');
   }

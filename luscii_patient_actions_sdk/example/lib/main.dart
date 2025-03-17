@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:luscii_patient_actions_sdk/luscii_patient_actions_sdk.dart'
     as luscii_sdk;
-import 'package:luscii_patient_actions_sdk/model/luscii_action.dart';
-import 'package:luscii_patient_actions_sdk/model/luscii_launchable_status.dart';
+import 'package:luscii_patient_actions_sdk/model/luscii_sdk_action.dart';
+import 'package:luscii_patient_actions_sdk/model/luscii_sdk_launchable_status.dart';
 import 'package:luscii_patient_actions_sdk/result/luscii_sdk_result.dart';
 
 void main() async {
@@ -36,7 +36,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<LusciiAction> actions = [];
+  List<LusciiSdkAction> actions = [];
 
   @override
   void initState() {
@@ -84,15 +84,15 @@ class _HomePageState extends State<HomePage> {
                 final launchableStatus = action.launchableStatus;
                 final String message;
                 switch (launchableStatus) {
-                  case LaunchableStatusLaunchable():
+                  case LaunchableSdkStatusLaunchable():
                     message = 'Launchable';
-                  case LaunchableStatusCompleted(
+                  case LaunchableSdkStatusCompleted(
                       completedAt: final completedAt
                     ):
                     message = 'Completed at $completedAt';
-                  case LaunchableStatusAfter(afterDate: final afterDate):
+                  case LaunchableSdkStatusAfter(afterDate: final afterDate):
                     message = 'After $afterDate';
-                  case LaunchableStatusBefore(beforeDate: final beforeDate):
+                  case LaunchableSdkStatusBefore(beforeDate: final beforeDate):
                     message = 'Before $beforeDate';
                 }
                 return GestureDetector(

@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:luscii_patient_actions_sdk/error/luscii_sdk_error.dart';
-import 'package:luscii_patient_actions_sdk/model/luscii_action.dart';
-import 'package:luscii_patient_actions_sdk/model/luscii_action_response.dart';
+import 'package:luscii_patient_actions_sdk/model/luscii_sdk_action.dart';
+import 'package:luscii_patient_actions_sdk/model/luscii_sdk_action_response.dart';
 import 'package:luscii_patient_actions_sdk/result/luscii_sdk_result.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart';
@@ -22,13 +22,15 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
 }
 
 /// Get the actions for the authenticated user.
-Future<LusciiSdkResult<List<LusciiAction>, LusciiSdkError>> getActions() async {
+Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
+    getActions() async {
   try {
     final actions = await _platform.getActions();
     return LusciiSdkSuccess(
       actions
           .map(
-            (action) => LusciiAction.fromMap(action as Map<dynamic, dynamic>),
+            (action) =>
+                LusciiSdkAction.fromMap(action as Map<dynamic, dynamic>),
           )
           .toList(growable: false),
     );
@@ -57,12 +59,12 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> launchAction(
 }
 
 /// Listen to updates the action stream results.
-Stream<LusciiSdkResult<LusciiActionResponse, LusciiSdkError>>
+Stream<LusciiSdkResult<LusciiSdkActionResponse, LusciiSdkError>>
     actionFlowStream() {
   return _platform.actionFlowStream().map((event) {
     try {
       return LusciiSdkSuccess(
-        LusciiActionResponse.fromMap(event as Map<dynamic, dynamic>),
+        LusciiSdkActionResponse.fromMap(event as Map<dynamic, dynamic>),
       );
     } on LusciiSdkException catch (e) {
       return LusciiSdkFailure(LusciiSdkError.fromErrorCode('4', e.reason));
