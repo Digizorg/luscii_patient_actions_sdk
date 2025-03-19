@@ -1,4 +1,4 @@
-import 'package:luscii_patient_actions_sdk/model/luscii_launchable_status.dart';
+import 'package:luscii_patient_actions_sdk/model/luscii_sdk_launchable_status.dart';
 
 /// A Luscii action coming from the Luscii SDK.
 class LusciiSdkAction {
