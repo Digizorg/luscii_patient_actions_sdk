@@ -106,8 +106,15 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     try {
                         val actions = luscii.getActions().map { it.toMap() }
                         result.success(actions)
+                    } catch (e: UnauthenticatedException) {
+                        result.error(
+                            LusciiFlutterSdkError.UNAUTHORIZED.code,
+                            LusciiFlutterSdkError.UNAUTHORIZED.message,
+                            e.message
+                        )
+                        return@launch
                     } catch (e: Exception) {
-                        // TODO: Handle Authentication errors
+                        // TODO: Handle more errors
                         result.error(
                             LusciiFlutterSdkError.UNKNOWN.code,
                             LusciiFlutterSdkError.UNKNOWN.message,
