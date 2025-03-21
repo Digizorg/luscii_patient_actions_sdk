@@ -6,6 +6,7 @@ import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import com.luscii.sdk.Luscii
 import com.luscii.sdk.actions.setActionFlowFragmentResultListener
+import com.luscii.sdk.UnauthenticatedException
 import dagger.hilt.android.EntryPointAccessors
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
