@@ -1,13 +1,10 @@
 package nl.digizorg
 
 import android.app.Activity
-import android.content.Context
-import androidx.annotation.NonNull
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import com.luscii.sdk.Luscii
-import com.luscii.sdk.actions.setActionFlowFragmentResultListener
 import com.luscii.sdk.UnauthenticatedException
-import dagger.hilt.android.EntryPointAccessors
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -19,12 +16,9 @@ import io.flutter.plugin.common.MethodChannel.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import nl.digizorg.errors.LusciiFlutterSdkError
 import nl.digizorg.extensions.toMap
-import nl.digizorg.hilt.LusciiEntryPoint
-import javax.inject.Singleton
-import androidx.fragment.app.commit
+import com.luscii.sdk.actions.Action
 import io.flutter.plugin.common.EventChannel
 import nl.digizorg.event.EventHandler
 
@@ -35,9 +29,11 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     private lateinit var eventChannel: EventChannel
     private lateinit var eventHandler: EventHandler
 
-    private lateinit var luscii: Luscii
+    private var luscii: Luscii? = null
 
     private var activity: Activity? = null
+
+    private var actionFlowLauncher: ActivityResultLauncher<Action>? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "luscii_patient_actions_sdk_android")
@@ -48,14 +44,29 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
         eventChannel.setStreamHandler(eventHandler)
 
         val appContext = flutterPluginBinding.applicationContext
-
-        val hiltEntryPoint = EntryPointAccessors.fromApplication(appContext, LusciiEntryPoint::class.java)
-        luscii = hiltEntryPoint.getLuscii()
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
+            "initialize" -> {
+                val useDynamicColors = call.argument<Boolean>("useDynamicColors") ?: false
+
+                luscii = Luscii {
+                    applicationContext = activity?.applicationContext
+                    this.useDynamicColors = useDynamicColors
+                }
+                registerLauncherIfReady()
+                result.success(null)
+            }
             "authenticate" -> {
+                // Check if the luscii instance is initialized
+                if (luscii == null) {
+                    return result.error(
+                        LusciiFlutterSdkError.NOT_INITIALIZED.code,
+                        LusciiFlutterSdkError.NOT_INITIALIZED.message,
+                        null
+                    )
+                }
                 val value = call.arguments<String>() ?: return result.error(
                     LusciiFlutterSdkError.INVALID_ARGUMENTS.code,
                     LusciiFlutterSdkError.INVALID_ARGUMENTS.message,
@@ -73,7 +84,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         // Perform the suspend function in the IO context
-                        val authResult = luscii.authenticate(value)
+                        val authResult = luscii!!.authenticate(value)
 
                         when (authResult) {
                             is Luscii.AuthenticateResult.Success -> {
@@ -103,9 +114,17 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
             }
 
             "getActions" -> {
+                // Check if the luscii instance is initialized
+                if (luscii == null) {
+                    return result.error(
+                        LusciiFlutterSdkError.NOT_INITIALIZED.code,
+                        LusciiFlutterSdkError.NOT_INITIALIZED.message,
+                        null
+                    )
+                }
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val actions = luscii.getActions().map { it.toMap() }
+                        val actions = luscii!!.getActions().map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
                         result.error(
@@ -127,6 +146,14 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 }
             }
             "launchAction" -> {
+                // Check if the luscii instance is initialized
+                if (luscii == null) {
+                    return result.error(
+                        LusciiFlutterSdkError.NOT_INITIALIZED.code,
+                        LusciiFlutterSdkError.NOT_INITIALIZED.message,
+                        null
+                    )
+                }
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val actionId = call.arguments<String>() ?: return@launch result.error(
@@ -143,7 +170,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val actions = luscii.getActions()
+                        val actions = luscii!!.getActions()
                         val action = actions.firstOrNull { it.id.toString() == actionId }
                         if (action == null) {
                             return@launch result.error(
@@ -152,20 +179,8 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                                 null
                             )
                         }
+                        actionFlowLauncher?.launch(action)
 
-                        val fragment = luscii.buildActionFlowFragment(action)
-
-                        withContext(Dispatchers.Main) {
-                            (activity as FragmentActivity).supportFragmentManager.apply {
-                                setActionFlowFragmentResultListener((activity as FragmentActivity)) {
-                                    eventHandler.handleActionFlowResult(it)
-                                }
-
-                                commit {
-                                    add(fragment, "ActionFlow")
-                                }
-                            }
-                        }
                         result.success(null)
                     } catch (e: Exception) {
                         result.error(
@@ -176,14 +191,27 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     }
                 }
             }
-            else -> {
-                result.notImplemented()
-            }
+            else -> result.notImplemented()
         }
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         this.activity = binding.activity
+    }
+
+    private fun registerLauncherIfReady() {
+        if (actionFlowLauncher != null || luscii == null || activity == null) return
+
+        val componentActivity = activity as? ComponentActivity
+            ?: return
+
+        actionFlowLauncher = componentActivity
+            .activityResultRegistry
+            .register(
+                "luscii_action_flow",
+                luscii!!.createActionFlowActivityResultContract(),
+                eventHandler::handleActionFlowResult
+            )
     }
 
     override fun onDetachedFromActivityForConfigChanges() {

@@ -7,6 +7,13 @@ import 'package:luscii_patient_actions_sdk/result/luscii_sdk_result.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final initialize = await luscii_sdk.initialize(androidDynamicTheming: true);
+  if (initialize is LusciiSdkSuccess) {
+    debugPrint('SDK initialized successfully');
+  } else if (initialize is LusciiSdkFailure) {
+    debugPrint('SDK initialization failed');
+    debugPrint('Error: $initialize');
+  }
   final lusciiPatientActionsSdk = await luscii_sdk.authenticate(
     '<API_KEY>',
   );
@@ -41,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     luscii_sdk.actionFlowStream().listen((event) {
       debugPrint('Action stream event: $event');
       switch (event) {

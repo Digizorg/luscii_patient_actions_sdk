@@ -28,12 +28,20 @@ android {
     buildFeatures {
       dataBinding = true
 	}
+	compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true // Luscii requires core library desugaring to be enabled
+    }
 }
     
 dependencies {
 	// All your current dependencies
 	implementation "com.google.dagger:hilt-android:2.55"
 	kapt "com.google.dagger:hilt-compiler:2.55"
+	implementation 'androidx.window:window:1.3.0'
+	implementation 'androidx.window:window-java:1.3.0'
+	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 kapt {
     correctErrorTypes = true

@@ -9,6 +9,18 @@ import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_act
 LusciiPatientActionsSdkPlatform get _platform =>
     LusciiPatientActionsSdkPlatform.instance;
 
+/// Initialize the SDK.
+Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> initialize({
+  bool androidDynamicTheming = false,
+}) async {
+  try {
+    await _platform.initialize(androidDynamicTheming: androidDynamicTheming);
+    return const LusciiSdkSuccess(LusciiSdkNoResponse());
+  } on PlatformException catch (e) {
+    return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
+  }
+}
+
 /// Authenticate the user with the given token.
 Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
   String apiKey,

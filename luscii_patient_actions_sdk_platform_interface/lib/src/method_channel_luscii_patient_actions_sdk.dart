@@ -16,6 +16,18 @@ class MethodChannelLusciiPatientActionsSdk
   final eventChannel = const EventChannel('luscii_patient_actions_sdk/events');
 
   @override
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+  }) async {
+    await methodChannel.invokeMethod<void>(
+      'initialize',
+      <String, bool>{
+        'androidDynamicTheming': androidDynamicTheming,
+      },
+    );
+  }
+
+  @override
   Future<void> authenticate(
     String apiKey,
   ) async {

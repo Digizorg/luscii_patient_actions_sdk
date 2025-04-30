@@ -21,6 +21,15 @@ class LusciiPatientActionsSdkIOS extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+  }) async {
+    // iOS does not support dynamic theming
+    // and does not require initialization
+    return Future.value();
+  }
+
+  @override
   Future<void> authenticate(
     String apiKey,
   ) async {

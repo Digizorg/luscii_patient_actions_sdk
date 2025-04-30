@@ -10,6 +10,7 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   final methodChannel =
       const MethodChannel('luscii_patient_actions_sdk_android');
 
+  /// The event channel used to listen to the native platform.
   @visibleForTesting
   final eventChannel =
       const EventChannel('luscii_patient_actions_sdk_android/events');
@@ -18,6 +19,18 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   /// instance of [LusciiPatientActionsSdkPlatform]
   static void registerWith() {
     LusciiPatientActionsSdkPlatform.instance = LusciiPatientActionsSdkAndroid();
+  }
+
+  @override
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+  }) async {
+    await methodChannel.invokeMethod<void>(
+      'initialize',
+      <String, bool>{
+        'androidDynamicTheming': androidDynamicTheming,
+      },
+    );
   }
 
   @override

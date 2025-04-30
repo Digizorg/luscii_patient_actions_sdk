@@ -32,6 +32,11 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Initialize the SDK.
+  Future<void> initialize({
+    bool androidDynamicTheming,
+  });
+
   /// Authenticate the user with the given token.
   Future<void> authenticate(
     String apiKey,
