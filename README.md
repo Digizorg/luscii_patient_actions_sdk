@@ -117,8 +117,7 @@ FlutterActivity is not supported by Hilt, so we need to change it to a FlutterFr
 
 ## Support
 
-This package is under heavy development. Currently *only* the iOS side works. 
-We are currently developing the Android side.
+This package is under heavy development.
 
 | Function               | iOS Support | Android Support |
 |------------------------|-------------|-----------------|
