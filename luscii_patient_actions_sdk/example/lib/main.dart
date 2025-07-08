@@ -112,10 +112,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: const Text('LusciiPatientActionsSdk Example')),
       body: Column(
         children: [
-          TextButton(
-            onPressed: getActions,
-            child: const Text('Get actions'),
-          ),
+          TextButton(onPressed: getActions, child: const Text('Get actions')),
           if (errorMessage != null)
             Padding(
               padding: const EdgeInsets.all(16),
@@ -125,54 +122,55 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           Expanded(
-            child: actions == null
-                // Initial state - no actions fetched yet
-                ? const Center(
-                    child: Text(
-                      'Press "Get actions" to retrieve your actions',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  )
-                : actions!.isEmpty
+            child:
+                actions == null
+                    // Initial state - no actions fetched yet
+                    ? const Center(
+                      child: Text(
+                        'Press "Get actions" to retrieve your actions',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
+                    : actions!.isEmpty
                     // Empty list state - actions fetched but none available
                     ? const Center(
-                        child: Text(
-                          'No actions available',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      )
+                      child: Text(
+                        'No actions available',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
                     // Actions available state
                     : ListView.builder(
-                        itemCount: actions!.length,
-                        itemBuilder: (context, index) {
-                          final action = actions![index];
-                          final launchableStatus = action.launchableStatus;
-                          final String message;
-                          switch (launchableStatus) {
-                            case LaunchableSdkStatusLaunchable():
-                              message = 'Launchable';
-                            case LaunchableSdkStatusCompleted(
-                                completedAt: final completedAt
-                              ):
-                              message = 'Completed at $completedAt';
-                            case LaunchableSdkStatusAfter(
-                                afterDate: final afterDate
-                              ):
-                              message = 'After $afterDate';
-                            case LaunchableSdkStatusBefore(
-                                beforeDate: final beforeDate
-                              ):
-                              message = 'Before $beforeDate';
-                          }
-                          return GestureDetector(
-                            onTap: () => luscii_sdk.launchAction(action.id),
-                            child: ListTile(
-                              title: Text('Action ${action.name}'),
-                              subtitle: Text(message),
-                            ),
-                          );
-                        },
-                      ),
+                      itemCount: actions!.length,
+                      itemBuilder: (context, index) {
+                        final action = actions![index];
+                        final launchableStatus = action.launchableStatus;
+                        final String message;
+                        switch (launchableStatus) {
+                          case LaunchableSdkStatusLaunchable():
+                            message = 'Launchable';
+                          case LaunchableSdkStatusCompleted(
+                            completedAt: final completedAt,
+                          ):
+                            message = 'Completed at $completedAt';
+                          case LaunchableSdkStatusAfter(
+                            afterDate: final afterDate,
+                          ):
+                            message = 'After $afterDate';
+                          case LaunchableSdkStatusBefore(
+                            beforeDate: final beforeDate,
+                          ):
+                            message = 'Before $beforeDate';
+                        }
+                        return GestureDetector(
+                          onTap: () => luscii_sdk.launchAction(action.id),
+                          child: ListTile(
+                            title: Text('Action ${action.name}'),
+                            subtitle: Text(message),
+                          ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
