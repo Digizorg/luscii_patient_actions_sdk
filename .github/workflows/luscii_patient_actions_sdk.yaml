@@ -50,8 +50,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
 
-      - name: Install Fluttium
-        run: flutter pub global activate fluttium_cli
+      - name: Install Patrol CLI
+        run: flutter pub global activate patrol_cli
 
       - name: AVD Cache
         uses: actions/cache@v4
@@ -74,9 +74,11 @@ jobs:
 
       - name: E2E Tests
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
         with:
           api-level: 29
-          script: fluttium test flows/test_platform_name.yaml -d android
+          script: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
           working-directory: luscii_patient_actions_sdk/example
 
   ios:
@@ -91,8 +93,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
 
-      - name: Install Fluttium
-        run: flutter pub global activate fluttium_cli
+      - name: Install Patrol CLI
+        run: flutter pub global activate patrol_cli
 
       - name: Start Simulator
         # Start an iPhone simulator
@@ -102,4 +104,6 @@ jobs:
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
 
       - name: E2E Tests
-        run: fluttium test flows/test_platform_name.yaml -d iPhone
+        env:
+          LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
+        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY

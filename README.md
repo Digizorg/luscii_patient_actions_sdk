@@ -129,16 +129,16 @@ This package is under heavy development.
 
 ### Integration tests 🧪
 
-Very Good Flutter Plugin uses [fluttium][fluttium_link] for integration tests. Those tests are located 
+Very Good Flutter Plugin uses [Patrol][patrol_link] for integration tests. Those tests are located 
 in the front facing package `luscii_patient_actions_sdk` example. 
 
-**❗ In order to run the integration tests, you need to have the `fluttium_cli` installed. [See how][fluttium_install].**
+**❗ In order to run the integration tests, you need to have the `patrol_cli` installed. Run `flutter pub global activate patrol_cli`.**
 
 To run the integration tests, run the following command from the root of the project:
 
 ```sh
 cd luscii_patient_actions_sdk/example
-fluttium test flows/test_platform_name.yaml
+patrol test integration_test/app_test.dart
 ```
 
 [coverage_badge]: luscii_patient_actions_sdk/coverage_badge.svg
@@ -148,9 +148,8 @@ fluttium test flows/test_platform_name.yaml
 [logo_white]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_white.png#gh-dark-mode-only
 [very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
 [very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
+[patrol_link]: https://pub.dev/packages/patrol
 [very_good_cli_link]: https://github.com/VeryGoodOpenSource/very_good_cli
 [very_good_ventures_link]: https://verygood.ventures/?utm_source=github&utm_medium=banner&utm_campaign=core
 [very_good_ventures_link_dark]: https://verygood.ventures/?utm_source=github&utm_medium=banner&utm_campaign=core#gh-dark-mode-only
 [very_good_ventures_link_light]: https://verygood.ventures/?utm_source=github&utm_medium=banner&utm_campaign=core#gh-light-mode-only
-[fluttium_link]: https://fluttium.dev/
-[fluttium_install]: https://fluttium.dev/docs/getting-started/installing-cli

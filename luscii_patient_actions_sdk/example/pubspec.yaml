@@ -24,7 +24,15 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  patrol: ^3.17.0
   very_good_analysis: ^9.0.0
 
 flutter:
   uses-material-design: true
+
+patrol:
+  app_name: Example
+  android:
+    package_name: nl.digizorg.example
+  ios:
+    bundle_id: nl.digizorg.example
