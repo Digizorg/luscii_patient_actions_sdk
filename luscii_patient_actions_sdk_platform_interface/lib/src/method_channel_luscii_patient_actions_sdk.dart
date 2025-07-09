@@ -16,21 +16,14 @@ class MethodChannelLusciiPatientActionsSdk
   final eventChannel = const EventChannel('luscii_patient_actions_sdk/events');
 
   @override
-  Future<void> initialize({
-    bool androidDynamicTheming = false,
-  }) async {
-    await methodChannel.invokeMethod<void>(
-      'initialize',
-      <String, bool>{
-        'androidDynamicTheming': androidDynamicTheming,
-      },
-    );
+  Future<void> initialize({bool androidDynamicTheming = false}) async {
+    await methodChannel.invokeMethod<void>('initialize', <String, bool>{
+      'androidDynamicTheming': androidDynamicTheming,
+    });
   }
 
   @override
-  Future<void> authenticate(
-    String apiKey,
-  ) async {
+  Future<void> authenticate(String apiKey) async {
     await methodChannel.invokeMethod<Map<String, dynamic>>(
       'authenticate',
       apiKey,
@@ -44,17 +37,13 @@ class MethodChannelLusciiPatientActionsSdk
     );
 
     if (actions is! List) {
-      throw LusciiSdkException(
-        reason: 'Invalid response from native platform',
-      );
+      throw LusciiSdkException(reason: 'Invalid response from native platform');
     }
     return actions;
   }
 
   @override
-  Future<void> launchAction(
-    String actionId,
-  ) async {
+  Future<void> launchAction(String actionId) async {
     await methodChannel.invokeMethod<Map<String, dynamic>>(
       'launchAction',
       actionId,

@@ -33,22 +33,16 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
   }
 
   /// Initialize the SDK.
-  Future<void> initialize({
-    bool androidDynamicTheming,
-  });
+  Future<void> initialize({bool androidDynamicTheming});
 
   /// Authenticate the user with the given token.
-  Future<void> authenticate(
-    String apiKey,
-  );
+  Future<void> authenticate(String apiKey);
 
   /// Get the actions for the authenticated user.
   Future<List<dynamic>> getActions();
 
   /// Launch the action with the given ID.
-  Future<void> launchAction(
-    String actionId,
-  );
+  Future<void> launchAction(String actionId);
 
   /// Listen to updates the action stream results.
   Stream<Map<String, dynamic>> actionFlowStream();
