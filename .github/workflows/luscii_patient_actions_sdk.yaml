@@ -108,6 +108,7 @@ jobs:
           cd ..
 
       - name: Set up iOS simulator
+        id: simulator
         uses: futureware-tech/simulator-action@v4
         with:
           model: 'iPhone 16'
@@ -115,4 +116,4 @@ jobs:
       - name: E2E Tests
         env:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
-        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${udid}"
+        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${{ steps.simulator.outputs.udid }}"
