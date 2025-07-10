@@ -100,10 +100,10 @@ jobs:
         # Start an iPhone simulator
         run: |
           UDID=$(xcrun xctrace list devices | grep "^iPhone" | awk '{gsub(/[()]/,""); print $NF}' | head -n 1)
-          echo $UDID
+          echo "Using simulator with UDID: $UDID"
           xcrun simctl boot "${UDID:?No Simulator with this name found}"
 
       - name: E2E Tests
         env:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
-        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
+        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device $UDID --verbose
