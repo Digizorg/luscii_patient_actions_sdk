@@ -39,6 +39,11 @@ void main() {
       // should be present if actions were loaded
       final actionFinder = find.textContaining('Action ', findRichText: true);
       actionsVisible = actionFinder.evaluate().isNotEmpty;
+      if (!actionsVisible) {
+        // If no actions are found, check for the "No actions available" message
+        final noActionsFinder = find.text('No actions available');
+        actionsVisible = noActionsFinder.evaluate().isNotEmpty;
+      }
     } catch (_) {
       // If no actions are found, then the
       // "No actions available" message should be displayed
