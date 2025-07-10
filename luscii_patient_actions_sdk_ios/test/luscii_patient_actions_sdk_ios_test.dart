@@ -22,20 +22,21 @@ void main() {
 
       // Set up method channel mock
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel,
-              (methodCall) async {
-        log.add(methodCall);
-        switch (methodCall.method) {
-          case 'authenticate':
-            return null;
-          case 'getActions':
-            return mockActions;
-          case 'launchAction':
-            return null;
-          default:
-            return null;
-        }
-      });
+          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
+            methodCall,
+          ) async {
+            log.add(methodCall);
+            switch (methodCall.method) {
+              case 'authenticate':
+                return null;
+              case 'getActions':
+                return mockActions;
+              case 'launchAction':
+                return null;
+              default:
+                return null;
+            }
+          });
     });
 
     test('can be registered', () {
@@ -47,10 +48,7 @@ void main() {
     });
 
     test('initialize completes successfully', () async {
-      await expectLater(
-        lusciiPatientActionsSdk.initialize(),
-        completes,
-      );
+      await expectLater(lusciiPatientActionsSdk.initialize(), completes);
       // Initialize is a no-op on iOS, so no method call should be logged
       expect(log, isEmpty);
     });
@@ -74,14 +72,15 @@ void main() {
     test('getActions throws exception on invalid response', () async {
       // Override the mock to return null instead of a list
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel,
-              (methodCall) async {
-        log.add(methodCall);
-        if (methodCall.method == 'getActions') {
-          return null;
-        }
-        return null;
-      });
+          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
+            methodCall,
+          ) async {
+            log.add(methodCall);
+            if (methodCall.method == 'getActions') {
+              return null;
+            }
+            return null;
+          });
 
       expect(
         () => lusciiPatientActionsSdk.getActions(),

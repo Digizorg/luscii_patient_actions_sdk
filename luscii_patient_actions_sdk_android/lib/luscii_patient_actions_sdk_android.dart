@@ -7,13 +7,15 @@ import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_act
 class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel =
-      const MethodChannel('luscii_patient_actions_sdk_android');
+  final methodChannel = const MethodChannel(
+    'luscii_patient_actions_sdk_android',
+  );
 
   /// The event channel used to listen to the native platform.
   @visibleForTesting
-  final eventChannel =
-      const EventChannel('luscii_patient_actions_sdk_android/events');
+  final eventChannel = const EventChannel(
+    'luscii_patient_actions_sdk_android/events',
+  );
 
   /// Registers this class as the default
   /// instance of [LusciiPatientActionsSdkPlatform]
@@ -22,15 +24,10 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<void> initialize({
-    bool androidDynamicTheming = false,
-  }) async {
-    await methodChannel.invokeMethod<void>(
-      'initialize',
-      <String, bool>{
-        'androidDynamicTheming': androidDynamicTheming,
-      },
-    );
+  Future<void> initialize({bool androidDynamicTheming = false}) async {
+    await methodChannel.invokeMethod<void>('initialize', <String, bool>{
+      'androidDynamicTheming': androidDynamicTheming,
+    });
   }
 
   @override
@@ -48,17 +45,13 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
     );
 
     if (actions is! List) {
-      throw LusciiSdkException(
-        reason: 'Invalid response from native platform',
-      );
+      throw LusciiSdkException(reason: 'Invalid response from native platform');
     }
     return actions;
   }
 
   @override
-  Future<void> launchAction(
-    String actionId,
-  ) async {
+  Future<void> launchAction(String actionId) async {
     await methodChannel.invokeMethod<Map<String, dynamic>>(
       'launchAction',
       actionId,

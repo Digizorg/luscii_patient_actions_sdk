@@ -4,10 +4,7 @@ import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_e
 class LusciiSdkActionResponse {
   /// Creates a new [LusciiSdkActionResponse] with the
   /// given [actionId] and [status].
-  LusciiSdkActionResponse({
-    required this.actionId,
-    required this.status,
-  });
+  LusciiSdkActionResponse({required this.actionId, required this.status});
 
   /// Creates a new [LusciiSdkActionResponse] from a map.
   factory LusciiSdkActionResponse.fromMap(Map<dynamic, dynamic> map) {
