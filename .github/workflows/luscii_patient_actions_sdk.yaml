@@ -78,7 +78,7 @@ jobs:
         with:
           api-level: 29
           script: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
-          
+
   ios:
     runs-on: macos-15
 
@@ -115,4 +115,4 @@ jobs:
       - name: E2E Tests
         env:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
-        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${SIMULATOR_UDID}"
+        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${udid}"
