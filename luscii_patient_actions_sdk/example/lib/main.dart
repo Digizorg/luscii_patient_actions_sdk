@@ -27,7 +27,7 @@ String get apiKey {
   return '<TEST_API_KEY>';
 }
 
-Future<void> main() async {
+Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   final initialize = await luscii_sdk.initialize(androidDynamicTheming: true);
   if (initialize is LusciiSdkSuccess) {
@@ -44,7 +44,10 @@ Future<void> main() async {
     debugPrint('Authentication failed');
     debugPrint('Error: $lusciiPatientActionsSdk');
   }
+}
 
+Future<void> main() async {
+  await initApp();
   runApp(const MyApp());
 }
 
