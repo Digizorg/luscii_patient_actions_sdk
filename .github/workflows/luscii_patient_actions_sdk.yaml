@@ -86,7 +86,7 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
-          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --verbose
+          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
 
       - name: Upload Android Test Reports
         uses: actions/upload-artifact@v4
@@ -94,7 +94,8 @@ jobs:
         with:
           name: android-test-reports
           path: |
-            build/app/reports/
+            luscii_patient_actions_sdk/example/build/app/reports/
+            luscii_patient_actions_sdk/example/build/test-results/
           retention-days: 30
 
   ios:
@@ -135,3 +136,13 @@ jobs:
         env:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
         run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${{ steps.simulator.outputs.udid }}"
+
+      - name: Upload iOS Test Reports
+        uses: actions/upload-artifact@v4
+        if: always() # Upload reports even if tests fail
+        with:
+          name: ios-test-reports
+          path: |
+            luscii_patient_actions_sdk/example/build/ios_results*/
+            luscii_patient_actions_sdk/example/ios/test_output/
+          retention-days: 30

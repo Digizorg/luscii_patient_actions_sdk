@@ -13,9 +13,6 @@ void main() {
     expect($('LusciiPatientActionsSdk Example'), findsOneWidget);
     expect($('Get actions'), findsOneWidget);
 
-    // Add debug output for CI troubleshooting
-    debugPrint('Test starting - app loaded successfully');
-
     // Tap on the "Get actions" button
     await $('Get actions').tap();
 
@@ -42,46 +39,30 @@ void main() {
           $('Press "Get actions" to retrieve your actions').exists) {
         apiCallCompleted = true;
       }
-
-      // Log progress every 5 seconds for CI debugging
-      if (attempts % 5 == 0) {
-        debugPrint('Test waiting... attempt $attempts/$maxAttempts');
-      }
     }
 
     // Add debug information for CI troubleshooting
     if (!apiCallCompleted) {
-      debugPrint('API call timeout - checking current UI state...');
-      debugPrint('Error message exists: ${$('Error:').exists}');
-      debugPrint(
-        'No actions message exists: ${$('No actions available').exists}',
-      );
-      debugPrint('Action text exists: ${$('Action').exists}');
-      debugPrint(
-        'Initial message exists: ${$('Press "Get actions" to retrieve your actions').exists}',
-      );
-
       // Try to find what text is actually visible
       try {
         final finder = find.byType(Text);
         final widgets = $.tester.widgetList(finder);
-        debugPrint('Found ${widgets.length} Text widgets:');
+        final foundTexts = <String>[];
         for (final widget in widgets.take(10)) {
           // Limit to first 10 to avoid spam
           if (widget is Text && widget.data != null) {
-            debugPrint('  Text: "${widget.data}"');
+            foundTexts.add(widget.data!);
           }
         }
+        fail(
+          'API call did not complete within timeout. Found texts: ${foundTexts.join(", ")}',
+        );
       } catch (e) {
-        debugPrint('Could not enumerate Text widgets: $e');
+        fail(
+          'API call did not complete within timeout. Could not enumerate widgets: $e',
+        );
       }
-
-      fail(
-        'API call did not complete within timeout. Current UI state unknown.',
-      );
     }
-
-    debugPrint('API call completed after $attempts seconds');
 
     // First, check for error messages
     if ($('Error:').exists) {
