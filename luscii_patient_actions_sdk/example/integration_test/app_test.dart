@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luscii_patient_actions_sdk_example/main.dart' as app;
 import 'package:patrol/patrol.dart';
 
 void main() {
   patrolTest('Get actions flow test', ($) async {
+    // Enable verbose logging for tests
     await app.initApp();
     await $.pumpWidgetAndSettle(const app.MyApp());
 
@@ -12,10 +14,13 @@ void main() {
     expect($('Get actions'), findsOneWidget);
 
     // Add debug output for CI troubleshooting
-    print('Test starting - app loaded successfully');
+    debugPrint('Test starting - app loaded successfully');
 
     // Tap on the "Get actions" button
     await $('Get actions').tap();
+
+    // Give the UI a moment to start processing
+    await $.pumpAndSettle();
 
     // Wait for the API call to complete with a more robust approach
     // Use a longer timeout for slower CI environments
@@ -27,6 +32,9 @@ void main() {
       await Future<void>.delayed(const Duration(seconds: 1));
       attempts++;
 
+      // Pump the widget tree to ensure UI updates are reflected
+      await $.pumpAndSettle();
+
       // Check if we have any of the expected final states
       if ($('Error:').exists ||
           $('No actions available').exists ||
@@ -34,23 +42,46 @@ void main() {
           $('Press "Get actions" to retrieve your actions').exists) {
         apiCallCompleted = true;
       }
+
+      // Log progress every 5 seconds for CI debugging
+      if (attempts % 5 == 0) {
+        debugPrint('Test waiting... attempt $attempts/$maxAttempts');
+      }
     }
 
     // Add debug information for CI troubleshooting
     if (!apiCallCompleted) {
-      print('API call timeout - checking current UI state...');
-      print('Error message exists: ${$('Error:').exists}');
-      print('No actions message exists: ${$('No actions available').exists}');
-      print('Action text exists: ${$('Action').exists}');
-      print(
+      debugPrint('API call timeout - checking current UI state...');
+      debugPrint('Error message exists: ${$('Error:').exists}');
+      debugPrint(
+        'No actions message exists: ${$('No actions available').exists}',
+      );
+      debugPrint('Action text exists: ${$('Action').exists}');
+      debugPrint(
         'Initial message exists: ${$('Press "Get actions" to retrieve your actions').exists}',
       );
+
+      // Try to find what text is actually visible
+      try {
+        final finder = find.byType(Text);
+        final widgets = $.tester.widgetList(finder);
+        debugPrint('Found ${widgets.length} Text widgets:');
+        for (final widget in widgets.take(10)) {
+          // Limit to first 10 to avoid spam
+          if (widget is Text && widget.data != null) {
+            debugPrint('  Text: "${widget.data}"');
+          }
+        }
+      } catch (e) {
+        debugPrint('Could not enumerate Text widgets: $e');
+      }
+
       fail(
         'API call did not complete within timeout. Current UI state unknown.',
       );
     }
 
-    print('API call completed after $attempts seconds');
+    debugPrint('API call completed after $attempts seconds');
 
     // First, check for error messages
     if ($('Error:').exists) {

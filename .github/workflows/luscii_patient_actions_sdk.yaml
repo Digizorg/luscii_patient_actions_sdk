@@ -86,7 +86,18 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
-          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --verbose
+          script: |
+            cd luscii_patient_actions_sdk/example
+            patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --verbose
+
+      - name: Upload Android Test Reports
+        uses: actions/upload-artifact@v4
+        if: always() # Upload reports even if tests fail
+        with:
+          name: android-test-reports
+          path: |
+            luscii_patient_actions_sdk/example/build/app/reports/
+          retention-days: 30
 
   ios:
     runs-on: macos-15
