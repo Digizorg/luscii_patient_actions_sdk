@@ -41,10 +41,7 @@ void main() {
       },
     ];
 
-    final mockEventData = {
-      'actionID': 'action1',
-      'status': 'completed',
-    };
+    final mockEventData = {'actionID': 'action1', 'status': 'completed'};
 
     setUp(() {
       lusciiPatientActionsSdkPlatform = MockLusciiPatientActionsSdkPlatform();
@@ -81,12 +78,7 @@ void main() {
         () => lusciiPatientActionsSdkPlatform.initialize(
           androidDynamicTheming: any(named: 'androidDynamicTheming'),
         ),
-      ).thenThrow(
-        PlatformException(
-          code: '1',
-          message: 'Invalid arguments',
-        ),
-      );
+      ).thenThrow(PlatformException(code: '1', message: 'Invalid arguments'));
 
       final result = await initialize();
 
@@ -127,12 +119,7 @@ void main() {
 
       when(
         () => lusciiPatientActionsSdkPlatform.authenticate(any()),
-      ).thenThrow(
-        PlatformException(
-          code: '2',
-          message: 'Invalid API key',
-        ),
-      );
+      ).thenThrow(PlatformException(code: '2', message: 'Invalid API key'));
 
       final result = await authenticate(apiKey);
 
@@ -153,9 +140,7 @@ void main() {
 
       final result = await getActions();
 
-      verify(
-        () => lusciiPatientActionsSdkPlatform.getActions(),
-      ).called(1);
+      verify(() => lusciiPatientActionsSdkPlatform.getActions()).called(1);
 
       expect(
         result,
@@ -190,12 +175,8 @@ void main() {
     });
 
     test('getActions - LusciiSdkException', () async {
-      when(
-        () => lusciiPatientActionsSdkPlatform.getActions(),
-      ).thenThrow(
-        LusciiSdkException(
-          reason: 'Invalid response from native platform',
-        ),
+      when(() => lusciiPatientActionsSdkPlatform.getActions()).thenThrow(
+        LusciiSdkException(reason: 'Invalid response from native platform'),
       );
 
       final result = await getActions();
@@ -213,12 +194,7 @@ void main() {
     test('getActions - platform exception', () async {
       when(
         () => lusciiPatientActionsSdkPlatform.getActions(),
-      ).thenThrow(
-        PlatformException(
-          code: '3',
-          message: 'Unauthorized',
-        ),
-      );
+      ).thenThrow(PlatformException(code: '3', message: 'Unauthorized'));
 
       final result = await getActions();
 
@@ -259,12 +235,7 @@ void main() {
 
       when(
         () => lusciiPatientActionsSdkPlatform.launchAction(any()),
-      ).thenThrow(
-        PlatformException(
-          code: '1',
-          message: 'Invalid action ID',
-        ),
-      );
+      ).thenThrow(PlatformException(code: '1', message: 'Invalid action ID'));
 
       final result = await launchAction(actionId);
 
@@ -341,7 +312,8 @@ void main() {
 
       final stream = actionFlowStream();
 
-      // Since ArgumentError doesn't get directly caught in the actionFlowStream method,
+      // Since ArgumentError doesn't get directly
+      // caught in the actionFlowStream method,
       // we need to use try-catch in our test expectation
       expect(
         () async {
@@ -376,8 +348,7 @@ void main() {
       // Add data that will cause a LusciiSdkException
       streamController.add({
         'actionID': 'action1',
-        'status':
-            'error: something went wrong', // This will trigger LusciiSdkException
+        'status': 'error: something went wrong',
       });
 
       // Wait for the expectation to complete

@@ -24,7 +24,7 @@ class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
         'launchableStatus': 'launchable',
         'isLaunchable': true,
         'name': 'Temperature',
-      }
+      },
     ]);
   }
 

@@ -30,12 +30,13 @@ jobs:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
     with:
       flutter_channel: stable
-      flutter_version: 3.24.0
+      flutter_version: 3.32.6
+      min_coverage: 70
       working_directory: luscii_patient_actions_sdk
 
 
   android:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -46,12 +47,19 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: "21"
 
       - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: 'stable'
 
-      - name: Install Fluttium
-        run: flutter pub global activate fluttium_cli
+      - name: Install Patrol CLI
+        run: flutter pub global activate patrol_cli
+
+      - name: Run Flutter Pub Get
+        run: |
+          flutter pub get
 
       - name: AVD Cache
         uses: actions/cache@v4
@@ -62,25 +70,36 @@ jobs:
             ~/.android/adb*
           key: avd-29
 
-      - name: Cache AVD Snapshot
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       - name: E2E Tests
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
+          GITHUB_MAVEN_USERNAME: ${{ secrets.DIGIZORG_GITHUB_MAVEN_USERNAME }}
+          GITHUB_MAVEN_TOKEN: ${{ secrets.DIGIZORG_GITHUB_MAVEN_TOKEN }}
         with:
-          api-level: 29
-          script: fluttium test flows/test_platform_name.yaml -d android
-          working-directory: luscii_patient_actions_sdk/example
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
+
+      - name: Upload Android Test Reports
+        uses: actions/upload-artifact@v4
+        if: always() # Upload reports even if tests fail
+        with:
+          name: android-test-reports
+          path: |
+            luscii_patient_actions_sdk/example/build/app/reports/
+            luscii_patient_actions_sdk/example/build/test-results/
+          retention-days: 30
 
   ios:
-    runs-on: macos-latest
+    runs-on: macos-15
 
     defaults:
       run:
@@ -89,17 +108,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app
+
       - uses: subosito/flutter-action@v2
 
-      - name: Install Fluttium
-        run: flutter pub global activate fluttium_cli
+      - name: Install Patrol CLI
+        run: flutter pub global activate patrol_cli
 
-      - name: Start Simulator
-        # Start an iPhone simulator
+      - name: Run Flutter Pub Get
         run: |
-          UDID=$(xcrun xctrace list devices | grep "^iPhone" | awk '{gsub(/[()]/,""); print $NF}' | head -n 1)
-          echo $UDID
-          xcrun simctl boot "${UDID:?No Simulator with this name found}"
+          flutter pub get
 
+      - name: Prepare iOS project
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Set up iOS simulator
+        id: simulator
+        uses: futureware-tech/simulator-action@v4
+        with:
+          model: 'iPhone 16'
+      
       - name: E2E Tests
-        run: fluttium test flows/test_platform_name.yaml -d iPhone
+        env:
+          LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
+        run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${{ steps.simulator.outputs.udid }}"
+
+      - name: Upload iOS Test Reports
+        uses: actions/upload-artifact@v4
+        if: always() # Upload reports even if tests fail
+        with:
+          name: ios-test-reports
+          path: |
+            luscii_patient_actions_sdk/example/build/ios_results*/
+            luscii_patient_actions_sdk/example/ios/test_output/
+          retention-days: 30

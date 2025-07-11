@@ -1,0 +1,64 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# iOS specific
+ios/**/*.framework
+ios/**/*.xcframework
+ios/**/*.a
+ios/**/*.dylib
+ios/**/*.xcworkspace
+ios/**/*.dSYM.zip
+ios/**/*.dSYM
+ios/**/Pods/
+ios/**/*.mode1v3
+ios/**/*.mode2v3
+ios/**/*.perspectivev3
+ios/**/*.pbxuser
+ios/**/*.xccheckout
+ios/**/*.moved-aside
+ios/**/DerivedData/
+ios/**/*.hmap
+ios/**/*.ipa
+ios/**/*sync/
+ios/**/.symlinks/
+ios/**/profile
+ios/**/xcuserdata
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# Coverage reports
+coverage/
+.test_coverage.dart
+coverage_badge.svg

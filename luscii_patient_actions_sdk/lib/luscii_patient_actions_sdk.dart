@@ -35,7 +35,7 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
 
 /// Get the actions for the authenticated user.
 Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
-    getActions() async {
+getActions() async {
   try {
     final actions = await _platform.getActions();
     return LusciiSdkSuccess(
@@ -72,7 +72,7 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> launchAction(
 
 /// Listen to updates the action stream results.
 Stream<LusciiSdkResult<LusciiSdkActionResponse, LusciiSdkError>>
-    actionFlowStream() {
+actionFlowStream() {
   return _platform.actionFlowStream().map((event) {
     try {
       return LusciiSdkSuccess(
