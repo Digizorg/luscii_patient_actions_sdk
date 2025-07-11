@@ -312,7 +312,8 @@ void main() {
 
       final stream = actionFlowStream();
 
-      // Since ArgumentError doesn't get directly caught in the actionFlowStream method,
+      // Since ArgumentError doesn't get directly
+      // caught in the actionFlowStream method,
       // we need to use try-catch in our test expectation
       expect(
         () async {
@@ -347,8 +348,7 @@ void main() {
       // Add data that will cause a LusciiSdkException
       streamController.add({
         'actionID': 'action1',
-        'status':
-            'error: something went wrong', // This will trigger LusciiSdkException
+        'status': 'error: something went wrong',
       });
 
       // Wait for the expectation to complete

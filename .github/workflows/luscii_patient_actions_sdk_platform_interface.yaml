@@ -1,26 +1,27 @@
-# name: luscii_patient_actions_sdk_platform_interface
+name: luscii_patient_actions_sdk_platform_interface
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-# on:
-#   pull_request:
-#     paths:
-#       - ".github/workflows/luscii_patient_actions_sdk_platform_interface.yaml"
-#       - "luscii_patient_actions_sdk_platform_interface/**"
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - ".github/workflows/luscii_patient_actions_sdk_platform_interface.yaml"
-#       - "luscii_patient_actions_sdk_platform_interface/**"
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/luscii_patient_actions_sdk_platform_interface.yaml"
+      - "luscii_patient_actions_sdk_platform_interface/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/luscii_patient_actions_sdk_platform_interface.yaml"
+      - "luscii_patient_actions_sdk_platform_interface/**"
 
-# jobs:
-#   build:
-#     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
-#     with:
-#       flutter_channel: stable
-#       flutter_version: 3.32.5
-#       working_directory: luscii_patient_actions_sdk_platform_interface
+jobs:
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      flutter_channel: stable
+      flutter_version: 3.32.6
+      min_coverage: 15
+      working_directory: luscii_patient_actions_sdk_platform_interface
 
