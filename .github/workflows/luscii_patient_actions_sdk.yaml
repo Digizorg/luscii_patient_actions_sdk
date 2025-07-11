@@ -31,6 +31,7 @@ jobs:
     with:
       flutter_channel: stable
       flutter_version: 3.32.6
+      min_coverage: 70
       working_directory: luscii_patient_actions_sdk
 
 
@@ -83,6 +84,8 @@ jobs:
           GITHUB_MAVEN_TOKEN: ${{ secrets.DIGIZORG_GITHUB_MAVEN_TOKEN }}
         with:
           api-level: 29
+          arch: x86_64
+          target: google_apis
           script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --verbose
 
   ios:

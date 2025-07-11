@@ -22,6 +22,6 @@ jobs:
     with:
       flutter_channel: stable
       flutter_version: 3.32.6
-      min_coverage: 15
+      min_coverage: 90
       working_directory: luscii_patient_actions_sdk_android
 
