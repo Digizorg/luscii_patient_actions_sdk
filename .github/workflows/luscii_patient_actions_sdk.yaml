@@ -35,7 +35,7 @@ jobs:
 
 
   android:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     defaults:
       run:
