@@ -29,6 +29,7 @@ String get apiKey {
 
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('Initializing SDK...');
   final initialize = await luscii_sdk.initialize(androidDynamicTheming: true);
   if (initialize is LusciiSdkSuccess) {
     debugPrint('SDK initialized successfully');
@@ -37,6 +38,7 @@ Future<void> initApp() async {
     debugPrint('Error: $initialize');
   }
 
+  debugPrint('Authenticating with API key: ${apiKey.substring(0, 4)}...');
   final lusciiPatientActionsSdk = await luscii_sdk.authenticate(apiKey);
   if (lusciiPatientActionsSdk is LusciiSdkSuccess) {
     debugPrint('Authenticated successfully');
@@ -93,19 +95,28 @@ class _HomePageState extends State<HomePage> {
       errorMessage = null;
     });
 
-    final result = await luscii_sdk.getActions();
-    switch (result) {
-      case LusciiSdkSuccess(value: final actions):
-        setState(() {
-          this.actions = actions;
-          errorMessage = null;
-        });
-      case LusciiSdkFailure(exception: final exception):
-        debugPrint('Failed to get actions');
-        debugPrint(exception.reason);
-        setState(() {
-          errorMessage = 'Error: ${exception.reason}';
-        });
+    try {
+      debugPrint('Starting getActions API call...');
+      final result = await luscii_sdk.getActions();
+      switch (result) {
+        case LusciiSdkSuccess(value: final actions):
+          debugPrint('Successfully received ${actions.length} actions');
+          setState(() {
+            this.actions = actions;
+            errorMessage = null;
+          });
+        case LusciiSdkFailure(exception: final exception):
+          debugPrint('Failed to get actions');
+          debugPrint(exception.reason);
+          setState(() {
+            errorMessage = 'Error: ${exception.reason}';
+          });
+      }
+    } catch (e) {
+      debugPrint('Unexpected error in getActions: $e');
+      setState(() {
+        errorMessage = 'Error: Unexpected error occurred - $e';
+      });
     }
   }
 
@@ -125,55 +136,54 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           Expanded(
-            child:
-                actions == null
-                    // Initial state - no actions fetched yet
-                    ? const Center(
-                      child: Text(
-                        'Press "Get actions" to retrieve your actions',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    )
-                    : actions!.isEmpty
-                    // Empty list state - actions fetched but none available
-                    ? const Center(
-                      child: Text(
-                        'No actions available',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    )
-                    // Actions available state
-                    : ListView.builder(
-                      itemCount: actions!.length,
-                      itemBuilder: (context, index) {
-                        final action = actions![index];
-                        final launchableStatus = action.launchableStatus;
-                        final String message;
-                        switch (launchableStatus) {
-                          case LaunchableSdkStatusLaunchable():
-                            message = 'Launchable';
-                          case LaunchableSdkStatusCompleted(
-                            completedAt: final completedAt,
-                          ):
-                            message = 'Completed at $completedAt';
-                          case LaunchableSdkStatusAfter(
-                            afterDate: final afterDate,
-                          ):
-                            message = 'After $afterDate';
-                          case LaunchableSdkStatusBefore(
-                            beforeDate: final beforeDate,
-                          ):
-                            message = 'Before $beforeDate';
-                        }
-                        return GestureDetector(
-                          onTap: () => luscii_sdk.launchAction(action.id),
-                          child: ListTile(
-                            title: Text('Action ${action.name}'),
-                            subtitle: Text(message),
-                          ),
-                        );
-                      },
+            child: actions == null
+                // Initial state - no actions fetched yet
+                ? const Center(
+                    child: Text(
+                      'Press "Get actions" to retrieve your actions',
+                      style: TextStyle(fontSize: 16),
                     ),
+                  )
+                : actions!.isEmpty
+                // Empty list state - actions fetched but none available
+                ? const Center(
+                    child: Text(
+                      'No actions available',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                // Actions available state
+                : ListView.builder(
+                    itemCount: actions!.length,
+                    itemBuilder: (context, index) {
+                      final action = actions![index];
+                      final launchableStatus = action.launchableStatus;
+                      final String message;
+                      switch (launchableStatus) {
+                        case LaunchableSdkStatusLaunchable():
+                          message = 'Launchable';
+                        case LaunchableSdkStatusCompleted(
+                          completedAt: final completedAt,
+                        ):
+                          message = 'Completed at $completedAt';
+                        case LaunchableSdkStatusAfter(
+                          afterDate: final afterDate,
+                        ):
+                          message = 'After $afterDate';
+                        case LaunchableSdkStatusBefore(
+                          beforeDate: final beforeDate,
+                        ):
+                          message = 'Before $beforeDate';
+                      }
+                      return GestureDetector(
+                        onTap: () => luscii_sdk.launchAction(action.id),
+                        child: ListTile(
+                          title: Text('Action ${action.name}'),
+                          subtitle: Text(message),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
