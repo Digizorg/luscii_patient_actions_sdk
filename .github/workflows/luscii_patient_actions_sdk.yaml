@@ -75,9 +75,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
+          GITHUB_MAVEN_USERNAME: ${{ secrets.DIGIZORG_GITHUB_MAVEN_USERNAME }}
+          GITHUB_MAVEN_TOKEN: ${{ secrets.DIGIZORG_GITHUB_MAVEN_TOKEN }}
         with:
           api-level: 29
-          script: cd example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
+          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
 
   ios:
     runs-on: macos-15

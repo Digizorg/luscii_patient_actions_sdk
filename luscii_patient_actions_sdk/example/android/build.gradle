@@ -2,6 +2,16 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://jitpack.io"
+        }
+        maven {
+            url = uri("https://maven.pkg.github.com/Luscii/actions-sdk-android")
+            credentials {
+                username = System.getenv("GITHUB_MAVEN_USERNAME") ?: "<username>"
+                password = System.getenv("GITHUB_MAVEN_TOKEN") ?: "<password>"
+            }
+        }
     }
 }
 
