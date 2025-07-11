@@ -86,7 +86,7 @@ jobs:
           api-level: 29
           arch: x86_64
           target: google_apis
-          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY" --verbose
+          script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --verbose
 
   ios:
     runs-on: macos-15
