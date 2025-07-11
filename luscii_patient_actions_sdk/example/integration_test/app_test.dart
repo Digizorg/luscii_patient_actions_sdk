@@ -16,7 +16,7 @@ void main() {
 
     // Wait for the API call to complete and UI to update
     await Future<void>.delayed(
-      const Duration(seconds: 5),
+      const Duration(seconds: 10),
     ); // Give API call time to complete
 
     // First, check for error messages
