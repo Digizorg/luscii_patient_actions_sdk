@@ -56,6 +56,10 @@ jobs:
       - name: Install Patrol CLI
         run: flutter pub global activate patrol_cli
 
+      - name: Run Flutter Pub Get
+        run: |
+          flutter pub get
+
       - name: AVD Cache
         uses: actions/cache@v4
         id: avd-cache
