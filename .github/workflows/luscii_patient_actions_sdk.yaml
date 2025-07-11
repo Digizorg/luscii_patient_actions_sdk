@@ -77,7 +77,7 @@ jobs:
           LUSCII_API_KEY: ${{ secrets.LUSCII_API_KEY }}
         with:
           api-level: 29
-          script: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
+          script: cd example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
 
   ios:
     runs-on: macos-15
