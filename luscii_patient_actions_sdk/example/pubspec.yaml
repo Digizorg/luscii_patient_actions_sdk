@@ -1,6 +1,6 @@
 name: luscii_patient_actions_sdk_example
 description: Demonstrates how to use the luscii_patient_actions_sdk plugin.
-version: 0.1.0+1
+version: 0.2.0+1
 publish_to: none
 
 environment:
