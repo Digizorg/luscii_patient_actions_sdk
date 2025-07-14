@@ -55,6 +55,13 @@ Pod::Spec.new do |s|
   # Exclude i386 architecture for simulator builds
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386'
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/luscii_patient_actions_sdk_ios',
+    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
+  }
+
+  s.user_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/luscii_patient_actions_sdk_ios',
+    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
   }
 end
