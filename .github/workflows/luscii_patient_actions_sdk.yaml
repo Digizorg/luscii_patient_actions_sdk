@@ -26,23 +26,8 @@ jobs:
         .*/**/*.md
       modified_files_only: false
 
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.6"
-          channel: "stable"
-      - name: 📦 Configure Pub Credentials
-        env:
-          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
-        run: |
-          echo $CLOUDSMITH_API_KEY | flutter pub token add https://dart.cloudsmith.io/digizorg/default
-
   build:
-    needs: setup
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    uses: ./.github/workflows/flutter_package.yml
     with:
       flutter_channel: stable
       flutter_version: 3.32.6
@@ -135,6 +120,12 @@ jobs:
 
       - name: Install Patrol CLI
         run: flutter pub global activate patrol_cli
+
+      - name: 📦 Configure Pub Credentials
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+        run: |
+          echo $CLOUDSMITH_API_KEY | flutter pub token add https://dart.cloudsmith.io/digizorg/default
 
       - name: Run Flutter Pub Get
         run: |
