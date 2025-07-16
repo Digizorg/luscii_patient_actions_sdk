@@ -18,9 +18,11 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/flutter_package.yml
+    uses: ./.github/workflows/flutter_package.yaml
     with:
       flutter_channel: stable
       flutter_version: 3.32.6
       min_coverage: 90
       working_directory: luscii_patient_actions_sdk_ios
+    secrets:
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
