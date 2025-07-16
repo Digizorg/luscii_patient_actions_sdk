@@ -1,0 +1,53 @@
+name: pub_publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+
+      - name: 📦 Configure Pub Credentials
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+        run: |
+          echo '$CLOUDSMITH_API_KEY' | flutter pub token add https://dart.cloudsmith.io/digizorg/default
+
+      - name: 📦 Publish Main SDK Package
+        working-directory: ./
+        run: |
+          flutter pub get
+          dart pub publish --dry-run
+          dart pub publish --force
+
+      - name: 📦 Publish Platform Interface Package
+        working-directory: ./luscii_patient_actions_sdk_platform_interface
+        run: |
+          flutter pub get
+          dart pub publish --dry-run
+          dart pub publish --force
+
+      - name: 📦 Publish Android Package
+        working-directory: ./luscii_patient_actions_sdk_android
+        run: |
+          flutter pub get
+          dart pub publish --dry-run
+          dart pub publish --force
+
+      - name: 📦 Publish iOS Package
+        working-directory: ./luscii_patient_actions_sdk_ios
+        run: |
+          flutter pub get
+          dart pub publish --dry-run
+          dart pub publish --force
