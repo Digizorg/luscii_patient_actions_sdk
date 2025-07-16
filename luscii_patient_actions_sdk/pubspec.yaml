@@ -6,6 +6,7 @@ publish_to: https://dart.cloudsmith.io/digizorg/default/
 
 environment:
   sdk: ^3.8.1
+  flutter: ">=3.32.0"
 
 flutter:
   plugin:
