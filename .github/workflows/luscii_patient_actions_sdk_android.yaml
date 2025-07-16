@@ -18,10 +18,18 @@ on:
 
 jobs:
   build:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
-    with:
-      flutter_channel: stable
-      flutter_version: 3.32.6
-      min_coverage: 90
-      working_directory: luscii_patient_actions_sdk_android
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: 📦 Configure Pub Credentials
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+        run: |
+          echo '$CLOUDSMITH_API_KEY' | flutter pub token add https://dart.cloudsmith.io/digizorg/default
+
+      - uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+        with:
+          flutter_channel: stable
+          flutter_version: 3.32.6
+          min_coverage: 90
+          working_directory: luscii_patient_actions_sdk_android

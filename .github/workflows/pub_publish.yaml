@@ -24,30 +24,23 @@ jobs:
         run: |
           echo '$CLOUDSMITH_API_KEY' | flutter pub token add https://dart.cloudsmith.io/digizorg/default
 
-      - name: 📦 Publish Main SDK Package
-        working-directory: ./
+      - name: 📦 Publish Packages
         run: |
-          flutter pub get
-          dart pub publish --dry-run
-          dart pub publish --force
+          # Define the package directories in the order they should be published
+          packages=(
+            "luscii_patient_actions_sdk_platform_interface"
+            "luscii_patient_actions_sdk_android"
+            "luscii_patient_actions_sdk_ios"
+            "luscii_patient_actions_sdk"
+          )
 
-      - name: 📦 Publish Platform Interface Package
-        working-directory: ./luscii_patient_actions_sdk_platform_interface
-        run: |
-          flutter pub get
-          dart pub publish --dry-run
-          dart pub publish --force
-
-      - name: 📦 Publish Android Package
-        working-directory: ./luscii_patient_actions_sdk_android
-        run: |
-          flutter pub get
-          dart pub publish --dry-run
-          dart pub publish --force
-
-      - name: 📦 Publish iOS Package
-        working-directory: ./luscii_patient_actions_sdk_ios
-        run: |
-          flutter pub get
-          dart pub publish --dry-run
-          dart pub publish --force
+          # Loop through packages and publish in order
+          for package in "${packages[@]}"; do
+            echo "📦 Publishing $package"
+            cd "./$package" || exit 1
+            flutter pub get
+            dart pub publish --dry-run
+            dart pub publish --force
+            cd .. || exit 1
+            echo "✅ Published $package"
+          done
