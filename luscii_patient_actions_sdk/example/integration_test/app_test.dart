@@ -35,7 +35,7 @@ void main() {
       // Check if we have any of the expected final states
       if ($('Error:').exists ||
           $('No actions available').exists ||
-          $('Action').exists ||
+          $(RegExp('Action.*')).exists ||
           $('Press "Get actions" to retrieve your actions').exists) {
         apiCallCompleted = true;
       }
@@ -75,7 +75,7 @@ void main() {
     var actionsVisible = false;
 
     // Check for actions more broadly - look for any text containing "Action"
-    if ($('Action').exists) {
+    if ($(RegExp('Action.*')).exists) {
       actionsVisible = true;
     } else if ($('No actions available').exists) {
       actionsVisible = true;
