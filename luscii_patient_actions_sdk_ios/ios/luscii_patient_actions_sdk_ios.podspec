@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'luscii_patient_actions_sdk_ios'
-  s.version          = '0.2.0'
+  s.version          = '0.3.0'
   s.summary          = 'An iOS implementation of the luscii_patient_actions_sdk plugin.'
   s.description      = <<-DESC
   An iOS implementation of the luscii_patient_actions_sdk plugin.
@@ -18,10 +18,7 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
 
   # Specify the version of Actions you want to include
-  actions_version = '1.2.0'
-
-  # Specify the version of RxSwift libraries to include
-  rx_version = '6.6.0'
+  actions_version = '1.3.2'
 
   # Download and unzip the Actions.xcframework and RxSwift frameworks during the prepare phase
   s.prepare_command = <<-CMD
@@ -29,25 +26,10 @@ Pod::Spec.new do |s|
     curl -L -o Actions.xcframework.zip https://github.com/Luscii/actions-sdk-ios/releases/download/#{actions_version}/Actions.xcframework.zip
     unzip -o Actions.xcframework.zip
     rm Actions.xcframework.zip
-
-    # Download RxSwift.xcframework
-    curl -L -o RxSwift.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxSwift.xcframework.zip
-    unzip -o RxSwift.xcframework.zip
-    rm RxSwift.xcframework.zip
-
-    # Download RxCocoa.xcframework
-    curl -L -o RxCocoa.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxCocoa.xcframework.zip
-    unzip -o RxCocoa.xcframework.zip
-    rm RxCocoa.xcframework.zip
-
-    # Download RxRelay.xcframework
-    curl -L -o RxRelay.xcframework.zip https://github.com/Luscii/rxc-ios/releases/download/#{rx_version}/RxRelay.xcframework.zip
-    unzip -o RxRelay.xcframework.zip
-    rm RxRelay.xcframework.zip
   CMD
 
   # Include the frameworks as vendored frameworks
-  s.vendored_frameworks = 'Actions.xcframework', 'RxSwift.xcframework', 'RxCocoa.xcframework', 'RxRelay.xcframework'
+  s.vendored_frameworks = 'Actions.xcframework'
 
   # Specify that this pod builds a static framework to prevent multiple embeddings
   s.static_framework = true
