@@ -37,8 +37,8 @@ android {
     
 dependencies {
 	// All your current dependencies
-	implementation "com.google.dagger:hilt-android:2.55"
-	kapt "com.google.dagger:hilt-compiler:2.55"
+	implementation "com.google.dagger:hilt-android:2.57"
+	kapt "com.google.dagger:hilt-compiler:2.57"
 	implementation 'androidx.window:window:1.3.0'
 	implementation 'androidx.window:window-java:1.3.0'
 	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
