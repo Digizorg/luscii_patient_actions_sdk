@@ -1,4 +1,0 @@
-framework module Actions {
-  header "Actions-Swift.h"
-  requires objc
-}
