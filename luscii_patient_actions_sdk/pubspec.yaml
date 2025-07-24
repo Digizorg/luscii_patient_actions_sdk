@@ -1,10 +1,11 @@
 name: luscii_patient_actions_sdk
 description: Luscii Patient Actions SDK plugin
 version: 0.3.0+1
-publish_to: none
+homepage: https://digizorg.app
 
 environment:
   sdk: ^3.8.1
+  flutter: ">=3.32.0"
 
 flutter:
   plugin:
@@ -17,12 +18,9 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  luscii_patient_actions_sdk_android:
-    path: ../luscii_patient_actions_sdk_android
-  luscii_patient_actions_sdk_ios:
-    path: ../luscii_patient_actions_sdk_ios
-  luscii_patient_actions_sdk_platform_interface:
-    path: ../luscii_patient_actions_sdk_platform_interface
+  luscii_patient_actions_sdk_android: ^0.2.0+1
+  luscii_patient_actions_sdk_ios: ^0.2.0+1
+  luscii_patient_actions_sdk_platform_interface: ^0.2.0+1
 
 dev_dependencies:
   flutter_test:

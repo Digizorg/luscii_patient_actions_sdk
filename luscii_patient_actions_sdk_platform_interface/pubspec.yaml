@@ -1,7 +1,7 @@
 name: luscii_patient_actions_sdk_platform_interface
 description: A common platform interface for the luscii_patient_actions_sdk plugin.
 version: 0.3.0+1
-publish_to: none
+homepage: https://digizorg.app
 
 environment:
   sdk: ^3.8.1

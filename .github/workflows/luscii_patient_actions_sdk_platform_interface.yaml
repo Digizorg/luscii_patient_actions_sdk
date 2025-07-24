@@ -24,4 +24,3 @@ jobs:
       flutter_version: 3.32.6
       min_coverage: 15
       working_directory: luscii_patient_actions_sdk_platform_interface
-
