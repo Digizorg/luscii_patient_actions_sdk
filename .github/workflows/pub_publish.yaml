@@ -1,0 +1,42 @@
+name: pub_publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+
+      - name: 📦 Publish Packages
+        run: |
+          # Define the package directories in the order they should be published
+          packages=(
+            "luscii_patient_actions_sdk_platform_interface"
+            "luscii_patient_actions_sdk_android"
+            "luscii_patient_actions_sdk_ios"
+            "luscii_patient_actions_sdk"
+          )
+
+          # Loop through packages and publish in order
+          for package in "${packages[@]}"; do
+            echo "📦 Publishing $package"
+            cd "./$package" || exit 1
+            flutter pub get
+            dart pub publish --dry-run
+            dart pub publish --force
+            cd .. || exit 1
+            echo "✅ Published $package"
+            # Wait for a few seconds
+            sleep 15
+          done
