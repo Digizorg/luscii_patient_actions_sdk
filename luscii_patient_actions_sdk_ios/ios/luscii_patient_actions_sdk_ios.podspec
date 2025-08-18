@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
 
   # Specify the version of Actions you want to include
-  actions_version = '1.3.2'
+  actions_version = '1.4.1'
 
   # Download and unzip the Actions.xcframework and RxSwift frameworks during the prepare phase
   s.prepare_command = <<-CMD
