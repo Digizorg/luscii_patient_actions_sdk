@@ -1,6 +1,6 @@
 name: luscii_patient_actions_sdk
 description: Luscii Patient Actions SDK plugin
-version: 0.3.0+1
+version: 0.4.0+1
 publish_to: none
 
 environment:
