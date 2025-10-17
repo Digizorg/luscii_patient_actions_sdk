@@ -76,7 +76,7 @@ void main() {
     });
 
     test('getActions returns list of actions', () async {
-      final result = await lusciiPatientActionsSdk.getActions();
+      final result = await lusciiPatientActionsSdk.getTodayActions();
 
       expect(log, hasLength(1));
       expect(log.first.method, 'getActions');
@@ -97,7 +97,7 @@ void main() {
           });
 
       expect(
-        () => lusciiPatientActionsSdk.getActions(),
+        () => lusciiPatientActionsSdk.getTodayActions(),
         throwsA(isA<LusciiSdkException>()),
       );
     });

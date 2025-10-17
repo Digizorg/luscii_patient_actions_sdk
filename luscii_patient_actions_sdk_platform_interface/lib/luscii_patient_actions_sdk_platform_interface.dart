@@ -38,8 +38,8 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
   /// Authenticate the user with the given token.
   Future<void> authenticate(String apiKey);
 
-  /// Get the actions for the authenticated user.
-  Future<List<dynamic>> getActions();
+  /// Get today's actions for the authenticated user.
+  Future<List<dynamic>> getTodayActions();
 
   /// Launch the action with the given ID.
   Future<void> launchAction(String actionId);

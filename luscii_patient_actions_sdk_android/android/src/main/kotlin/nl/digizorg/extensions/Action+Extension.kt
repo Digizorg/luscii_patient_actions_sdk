@@ -9,7 +9,10 @@ fun Action.toMap(): Map<String, Any?> {
         "icon" to icon?.toString(), // Convert URL to string
         "completedAt" to completedAt?.toInstant()?.toEpochMilli()?.toDouble(), // Convert ZonedDateTime to timestamp (seconds since epoch)
         "launchableStatus" to serializeLaunchableStatus(),
-        "isLaunchable" to isLaunchable()
+        "isLaunchable" to isLaunchable(),
+        "isPlanned" to isPlanned,
+        "isSelfCare" to isSelfCare,
+        "isExtra" to isExtra
     )
 }
 

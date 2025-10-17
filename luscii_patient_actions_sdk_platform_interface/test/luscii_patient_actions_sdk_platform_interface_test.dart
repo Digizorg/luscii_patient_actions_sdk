@@ -15,7 +15,7 @@ class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getActions() {
+  Future<List<dynamic>> getTodayActions() {
     return Future.value([
       {
         'icon': 'https://example.com/icon.png',
@@ -64,7 +64,7 @@ void main() {
       });
 
       test('should get the actions for the authenticated user', () async {
-        final actions = await lusciiPatientActionsSdkPlatform.getActions();
+        final actions = await lusciiPatientActionsSdkPlatform.getTodayActions();
         expect(actions, isNotEmpty);
       });
 

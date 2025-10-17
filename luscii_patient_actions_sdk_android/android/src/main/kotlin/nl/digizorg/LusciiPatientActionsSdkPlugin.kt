@@ -120,7 +120,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 }
             }
 
-            "getActions" -> {
+            "getTodayActions" -> {
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
                     return result.error(
@@ -131,7 +131,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 }
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val actions = luscii!!.getActions().map { it.toMap() }
+                        val actions = luscii!!.getTodayActions().map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
                         result.error(
@@ -185,7 +185,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val actions = luscii!!.getActions()
+                        val actions = luscii!!.getTodayActions()
                         val action = actions.firstOrNull { it.id.toString() == actionId }
                         if (action == null) {
                             return@launch result.error(

@@ -37,9 +37,9 @@ class LusciiPatientActionsSdkIOS extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getActions() async {
+  Future<List<dynamic>> getTodayActions() async {
     final actions = await methodChannel.invokeMethod<List<dynamic>>(
-      'getActions',
+      'getTodayActions',
     );
 
     if (actions is! List) {
