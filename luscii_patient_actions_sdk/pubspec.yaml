@@ -1,10 +1,10 @@
 name: luscii_patient_actions_sdk
 description: Luscii Patient Actions SDK plugin
-version: 0.3.0+1
+version: 0.5.0+1
 publish_to: none
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.9.0
 
 flutter:
   plugin:
@@ -29,4 +29,4 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.4
   plugin_platform_interface: ^2.1.8
-  very_good_analysis: ^9.0.0
+  very_good_analysis: ^10.0.0

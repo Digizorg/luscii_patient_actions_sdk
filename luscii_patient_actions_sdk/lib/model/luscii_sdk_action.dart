@@ -11,6 +11,9 @@ class LusciiSdkAction {
     required this.isLaunchable,
     this.icon,
     this.completedAt,
+    this.isPlanned,
+    this.isSelfCare,
+    this.isExtra,
   });
 
   /// Creates a new [LusciiSdkAction] from the given [map].
@@ -21,6 +24,9 @@ class LusciiSdkAction {
     final icon = map['icon'] as String?;
     final isLaunchable = map['isLaunchable'] as bool?;
     final launchableStatus = map['launchableStatus'] as String?;
+    final isPlanned = map['isPlanned'] as bool?;
+    final isSelfCare = map['isSelfCare'] as bool?;
+    final isExtra = map['isExtra'] as bool?;
 
     // Check for required fields and their types
     if (id == null) {
@@ -70,6 +76,9 @@ class LusciiSdkAction {
           : null,
       launchableStatus: _parseLaunchableStatus(launchableStatus),
       isLaunchable: isLaunchable,
+      isPlanned: isPlanned,
+      isSelfCare: isSelfCare,
+      isExtra: isExtra,
     );
   }
 
@@ -90,6 +99,21 @@ class LusciiSdkAction {
 
   /// Whether the action is launchable.
   final bool isLaunchable;
+
+  /// Whether this action is planned.
+  /// Note that this only works on Android
+  final bool? isPlanned;
+
+  /// Whether this is a self-care action, meaning it was returned
+  /// from Luscii.getSelfCareActions.
+  /// Note that isPlanned can still be true if isSelfCare is true.
+  /// Note that this only works on Android
+  final bool? isSelfCare;
+
+  /// Whether this is a planned action that was completed as
+  /// an extra self-care action.
+  /// Note that this only works on Android
+  final bool? isExtra;
 
   // Helper method to parse the launchableStatus
   static LusciiSdkLaunchableStatus _parseLaunchableStatus(String status) {

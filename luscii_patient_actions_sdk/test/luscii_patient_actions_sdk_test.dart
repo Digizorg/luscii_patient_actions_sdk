@@ -133,14 +133,14 @@ void main() {
       expect(failure.exception.reason, 'Invalid API key');
     });
 
-    test('getActions - success', () async {
+    test('getTodayActions - success', () async {
       when(
-        () => lusciiPatientActionsSdkPlatform.getActions(),
+        () => lusciiPatientActionsSdkPlatform.getTodayActions(),
       ).thenAnswer((_) => Future.value(mockActions));
 
-      final result = await getActions();
+      final result = await getTodayActions();
 
-      verify(() => lusciiPatientActionsSdkPlatform.getActions()).called(1);
+      verify(() => lusciiPatientActionsSdkPlatform.getTodayActions()).called(1);
 
       expect(
         result,
@@ -175,11 +175,11 @@ void main() {
     });
 
     test('getActions - LusciiSdkException', () async {
-      when(() => lusciiPatientActionsSdkPlatform.getActions()).thenThrow(
+      when(() => lusciiPatientActionsSdkPlatform.getTodayActions()).thenThrow(
         LusciiSdkException(reason: 'Invalid response from native platform'),
       );
 
-      final result = await getActions();
+      final result = await getTodayActions();
 
       expect(
         result,
@@ -193,10 +193,10 @@ void main() {
 
     test('getActions - platform exception', () async {
       when(
-        () => lusciiPatientActionsSdkPlatform.getActions(),
+        () => lusciiPatientActionsSdkPlatform.getTodayActions(),
       ).thenThrow(PlatformException(code: '3', message: 'Unauthorized'));
 
-      final result = await getActions();
+      final result = await getTodayActions();
 
       expect(
         result,
