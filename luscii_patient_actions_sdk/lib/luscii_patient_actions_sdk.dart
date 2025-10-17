@@ -35,9 +35,9 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
 
 /// Get the actions for the authenticated user.
 Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
-getActions() async {
+getTodayActions() async {
   try {
-    final actions = await _platform.getActions();
+    final actions = await _platform.getTodayActions();
     return LusciiSdkSuccess(
       actions
           .map(

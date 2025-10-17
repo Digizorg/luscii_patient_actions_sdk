@@ -31,7 +31,7 @@ void main() {
                 return null;
               case 'authenticate':
                 return null;
-              case 'getActions':
+              case 'getTodayActions':
                 return mockActions;
               case 'launchAction':
                 return null;
@@ -75,29 +75,29 @@ void main() {
       expect(log.first.arguments, apiKey);
     });
 
-    test('getActions returns list of actions', () async {
-      final result = await lusciiPatientActionsSdk.getActions();
+    test('getTodayActions returns list of actions', () async {
+      final result = await lusciiPatientActionsSdk.getTodayActions();
 
       expect(log, hasLength(1));
-      expect(log.first.method, 'getActions');
+      expect(log.first.method, 'getTodayActions');
       expect(result, equals(mockActions));
     });
 
-    test('getActions throws exception on invalid response', () async {
+    test('getTodayActions throws exception on invalid response', () async {
       // Override the mock to return null instead of a list
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
             methodCall,
           ) async {
             log.add(methodCall);
-            if (methodCall.method == 'getActions') {
+            if (methodCall.method == 'getTodayActions') {
               return null;
             }
             return null;
           });
 
       expect(
-        () => lusciiPatientActionsSdk.getActions(),
+        () => lusciiPatientActionsSdk.getTodayActions(),
         throwsA(isA<LusciiSdkException>()),
       );
     });

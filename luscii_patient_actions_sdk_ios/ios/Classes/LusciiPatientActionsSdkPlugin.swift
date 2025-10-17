@@ -44,7 +44,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
           }
         }
       }
-    case "getActions":
+    case "getTodayActions":
       Task {
         do {
           let actions = try await luscii.actions().map { $0.toMap() }

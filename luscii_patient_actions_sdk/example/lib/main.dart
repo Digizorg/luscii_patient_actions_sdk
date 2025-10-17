@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> getActions() async {
+  Future<void> getTodayActions() async {
     // Reset error state before making the request
     setState(() {
       errorMessage = null;
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
 
     try {
       debugPrint('Starting getActions API call...');
-      final result = await luscii_sdk.getActions();
+      final result = await luscii_sdk.getTodayActions();
       switch (result) {
         case LusciiSdkSuccess(value: final actions):
           debugPrint('Successfully received ${actions.length} actions');
@@ -126,7 +126,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: const Text('LusciiPatientActionsSdk Example')),
       body: Column(
         children: [
-          TextButton(onPressed: getActions, child: const Text('Get actions')),
+          TextButton(
+            onPressed: getTodayActions,
+            child: const Text('Get actions'),
+          ),
           if (errorMessage != null)
             Padding(
               padding: const EdgeInsets.all(16),
