@@ -21,7 +21,6 @@ jobs:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
     with:
       flutter_channel: stable
-      flutter_version: 3.32.6
+      flutter_version: 3.35.5
       min_coverage: 90
       working_directory: luscii_patient_actions_sdk_ios
-
