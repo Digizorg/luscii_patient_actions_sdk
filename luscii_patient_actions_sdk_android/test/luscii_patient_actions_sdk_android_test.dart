@@ -31,7 +31,7 @@ void main() {
                 return null;
               case 'authenticate':
                 return null;
-              case 'getActions':
+              case 'getTodayActions':
                 return mockActions;
               case 'launchAction':
                 return null;
@@ -75,11 +75,11 @@ void main() {
       expect(log.first.arguments, apiKey);
     });
 
-    test('getActions returns list of actions', () async {
+    test('getTodayActions returns list of actions', () async {
       final result = await lusciiPatientActionsSdk.getTodayActions();
 
       expect(log, hasLength(1));
-      expect(log.first.method, 'getActions');
+      expect(log.first.method, 'getTodayActions');
       expect(result, equals(mockActions));
     });
 
