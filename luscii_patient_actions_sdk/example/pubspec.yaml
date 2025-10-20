@@ -27,6 +27,14 @@ dev_dependencies:
   patrol: ^3.17.0
   very_good_analysis: ^10.0.0
 
+dependency_overrides:
+  luscii_patient_actions_sdk_android:
+    path: ../../luscii_patient_actions_sdk_android
+  luscii_patient_actions_sdk_ios:
+    path: ../../luscii_patient_actions_sdk_ios
+  luscii_patient_actions_sdk_platform_interface:
+    path: ../../luscii_patient_actions_sdk_platform_interface
+
 flutter:
   uses-material-design: true
 

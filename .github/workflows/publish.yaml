@@ -1,0 +1,96 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "luscii_patient_actions_sdk/pubspec.yaml"
+      - "luscii_patient_actions_sdk_android/pubspec.yaml"
+      - "luscii_patient_actions_sdk_ios/pubspec.yaml"
+      - "luscii_patient_actions_sdk_platform_interface/pubspec.yaml"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        package:
+          - luscii_patient_actions_sdk_platform_interface
+          - luscii_patient_actions_sdk_android
+          - luscii_patient_actions_sdk_ios
+          - luscii_patient_actions_sdk
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - uses: dart-lang/setup-dart@v1
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.5"
+          channel: "stable"
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          cd ${{ matrix.package }}
+
+          # Get current version
+          CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          echo "Current version: $CURRENT_VERSION"
+
+          # Get previous version (from previous commit)
+          git show HEAD~1:${{ matrix.package }}/pubspec.yaml > /tmp/previous_pubspec.yaml 2>/dev/null || echo "version: 0.0.0" > /tmp/previous_pubspec.yaml
+          PREVIOUS_VERSION=$(grep '^version:' /tmp/previous_pubspec.yaml | sed 's/version: //')
+          echo "Previous version: $PREVIOUS_VERSION"
+
+          # Check if version changed
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check publish_to setting
+        if: steps.version-check.outputs.changed == 'true'
+        id: publish-check
+        run: |
+          cd ${{ matrix.package }}
+
+          # Check if publish_to is set to none
+          if grep -q "^publish_to: none" pubspec.yaml; then
+            echo "⚠️ Package has 'publish_to: none' set. Skipping publish."
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Package is ready to publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.version-check.outputs.changed == 'true' && steps.publish-check.outputs.should_publish == 'true'
+        run: |
+          cd ${{ matrix.package }}
+          flutter pub get
+
+      - name: Run tests
+        if: steps.version-check.outputs.changed == 'true' && steps.publish-check.outputs.should_publish == 'true'
+        run: |
+          cd ${{ matrix.package }}
+          flutter test
+
+      - name: Publish to pub.dev
+        if: steps.version-check.outputs.changed == 'true' && steps.publish-check.outputs.should_publish == 'true'
+        run: |
+          cd ${{ matrix.package }}
+          flutter pub publish --force
