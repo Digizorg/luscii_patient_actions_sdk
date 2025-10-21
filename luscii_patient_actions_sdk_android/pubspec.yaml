@@ -1,8 +1,8 @@
 name: luscii_patient_actions_sdk_android
 description: Android implementation of the luscii_patient_actions_sdk plugin
 version: 0.5.0+1
-repository: https://github.com/Luscii/luscii_patient_actions_sdk
-homepage: https://github.com/Luscii/luscii_patient_actions_sdk
+repository: https://github.com/Digizorg/luscii_patient_actions_sdk
+homepage: https://github.com/Digizorg/luscii_patient_actions_sdk
 
 environment:
   sdk: ^3.9.0
