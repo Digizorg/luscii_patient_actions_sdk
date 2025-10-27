@@ -88,7 +88,7 @@ jobs:
           script: cd luscii_patient_actions_sdk/example && patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY
 
       - name: Upload Android Test Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always() # Upload reports even if tests fail
         with:
           name: android-test-reports
@@ -140,7 +140,7 @@ jobs:
         run: patrol test integration_test/app_test.dart --dart-define=LUSCII_API_KEY=$LUSCII_API_KEY --device="${{ steps.simulator.outputs.udid }}"
 
       - name: Upload iOS Test Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always() # Upload reports even if tests fail
         with:
           name: ios-test-reports
