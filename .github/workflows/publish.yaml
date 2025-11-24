@@ -1,0 +1,45 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - "luscii_patient_actions_sdk_platform_interface-v*"
+      - "luscii_patient_actions_sdk_android-v*"
+      - "luscii_patient_actions_sdk_ios-v*"
+      - "luscii_patient_actions_sdk-v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # Required for OIDC authentication to pub.dev
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Extract package name from tag
+        id: package
+        run: |
+          # Tag format: package-name-v1.2.3
+          # Extract package name by removing -v* suffix
+          PACKAGE_NAME=$(echo "${{ github.ref_name }}" | sed 's/-v.*//')
+          echo "name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Publishing package: $PACKAGE_NAME"
+
+      - name: Install dependencies
+        run: |
+          cd ${{ steps.package.outputs.name }}
+          dart pub get
+
+      - name: Run tests
+        run: |
+          cd ${{ steps.package.outputs.name }}
+          dart test
+
+      - name: Publish to pub.dev
+        run: |
+          cd ${{ steps.package.outputs.name }}
+          dart pub publish --force

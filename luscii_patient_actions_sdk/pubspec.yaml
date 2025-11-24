@@ -1,10 +1,12 @@
 name: luscii_patient_actions_sdk
 description: Luscii Patient Actions SDK plugin
-version: 0.5.0+1
-publish_to: none
+version: 0.6.0+1
+repository: https://github.com/Digizorg/luscii_patient_actions_sdk
+homepage: https://github.com/Digizorg/luscii_patient_actions_sdk
 
 environment:
   sdk: ^3.9.0
+  flutter: ">=3.0.0"
 
 flutter:
   plugin:
@@ -17,12 +19,9 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  luscii_patient_actions_sdk_android:
-    path: ../luscii_patient_actions_sdk_android
-  luscii_patient_actions_sdk_ios:
-    path: ../luscii_patient_actions_sdk_ios
-  luscii_patient_actions_sdk_platform_interface:
-    path: ../luscii_patient_actions_sdk_platform_interface
+  luscii_patient_actions_sdk_android: ^0.6.0
+  luscii_patient_actions_sdk_ios: ^0.6.0
+  luscii_patient_actions_sdk_platform_interface: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +29,11 @@ dev_dependencies:
   mocktail: ^1.0.4
   plugin_platform_interface: ^2.1.8
   very_good_analysis: ^10.0.0
+
+dependency_overrides:
+  luscii_patient_actions_sdk_android:
+    path: ../luscii_patient_actions_sdk_android
+  luscii_patient_actions_sdk_ios:
+    path: ../luscii_patient_actions_sdk_ios
+  luscii_patient_actions_sdk_platform_interface:
+    path: ../luscii_patient_actions_sdk_platform_interface

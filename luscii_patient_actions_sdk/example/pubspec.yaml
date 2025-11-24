@@ -1,6 +1,6 @@
 name: luscii_patient_actions_sdk_example
 description: Demonstrates how to use the luscii_patient_actions_sdk plugin.
-version: 0.5.0+1
+version: 0.6.0+1
 publish_to: none
 
 environment:
@@ -26,6 +26,14 @@ dev_dependencies:
     sdk: flutter
   patrol: ^3.17.0
   very_good_analysis: ^10.0.0
+
+dependency_overrides:
+  luscii_patient_actions_sdk_android:
+    path: ../../luscii_patient_actions_sdk_android
+  luscii_patient_actions_sdk_ios:
+    path: ../../luscii_patient_actions_sdk_ios
+  luscii_patient_actions_sdk_platform_interface:
+    path: ../../luscii_patient_actions_sdk_platform_interface
 
 flutter:
   uses-material-design: true
