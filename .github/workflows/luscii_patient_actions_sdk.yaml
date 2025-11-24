@@ -43,6 +43,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+      - name: free disk space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
       - uses: actions/setup-java@v5
         with:
           distribution: "temurin"
