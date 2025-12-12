@@ -72,7 +72,7 @@ jobs:
           flutter pub get
 
       - name: AVD Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: avd-cache
         with:
           path: |
