@@ -24,7 +24,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  patrol: ^3.17.0
+  patrol: ^4.1.0
   very_good_analysis: ^10.0.0
 
 dependency_overrides:
