@@ -56,7 +56,13 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "initialize" -> {
-                val useDynamicColors = call.argument<Boolean>("useDynamicColors") ?: false
+                val useDynamicColors = call.argument<Boolean>("androidDynamicTheming") ?: false
+                val environment = call.argument<String>("environment")
+
+                if (environment != null && environment != "production") {
+                    println("WARNING: Android environment is determined by the 'lusciiSdkArtifact' Gradle property. " +
+                            "The 'environment' parameter '$environment' passed from Dart does not switch the native Android environment at runtime.")
+                }
 
                 luscii = Luscii {
                     applicationContext = activity?.applicationContext
