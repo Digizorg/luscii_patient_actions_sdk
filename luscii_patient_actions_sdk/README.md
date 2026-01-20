@@ -116,6 +116,30 @@ class MainActivity: FlutterFragmentActivity() {
 ```
 FlutterActivity is not supported by Hilt, so we need to change it to a FlutterFragmentActivity. 
 
+### Environment Configuration
+
+#### iOS (runtime)
+
+Call `initialize` before using any other method to select the environment:
+
+```dart
+await initialize(
+  environment: LusciiEnvironment.acceptance, // or production (default), test
+);
+```
+
+#### Android (build-time)
+
+Android uses separate artifacts per environment. To use the **Acceptance** or **Test** environment, configure the SDK artifact in your app's `gradle.properties` file:
+
+```properties
+# For Acceptance Environment
+lusciiSdkArtifact=com.luscii:sdk-acceptance:0.8.2
+
+# For Production (Default - no need to add this line unless explicit)
+# lusciiSdkArtifact=com.luscii:sdk:0.8.2
+```
+
 
 
 

@@ -6,15 +6,22 @@ import 'package:luscii_patient_actions_sdk/result/luscii_sdk_result.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart';
 
+export 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart'
+    show LusciiEnvironment;
+
 LusciiPatientActionsSdkPlatform get _platform =>
     LusciiPatientActionsSdkPlatform.instance;
 
 /// Initialize the SDK.
 Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> initialize({
   bool androidDynamicTheming = false,
+  LusciiEnvironment environment = LusciiEnvironment.production,
 }) async {
   try {
-    await _platform.initialize(androidDynamicTheming: androidDynamicTheming);
+    await _platform.initialize(
+      androidDynamicTheming: androidDynamicTheming,
+      environment: environment,
+    );
     return const LusciiSdkSuccess(LusciiSdkNoResponse());
   } on PlatformException catch (e) {
     return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
