@@ -33,11 +33,36 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
   }
 }
 
-/// Get the actions for the authenticated user.
+/// Get the today actions for the authenticated user.
 Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
 getTodayActions() async {
   try {
     final actions = await _platform.getTodayActions();
+    return LusciiSdkSuccess(
+      actions
+          .map(
+            (action) =>
+                LusciiSdkAction.fromMap(action as Map<dynamic, dynamic>),
+          )
+          .toList(growable: false),
+    );
+  } on LusciiSdkException catch (_) {
+    return LusciiSdkFailure(
+      LusciiSdkError(
+        LusciiSdkErrorType.invalidResponse,
+        'Invalid response from native platform',
+      ),
+    );
+  } on PlatformException catch (e) {
+    return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
+  }
+}
+
+/// Get the actions for the authenticated user.
+Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
+getSelfcareActions() async {
+  try {
+    final actions = await _platform.getSelfcareActions();
     return LusciiSdkSuccess(
       actions
           .map(

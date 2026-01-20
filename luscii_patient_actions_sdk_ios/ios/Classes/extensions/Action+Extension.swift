@@ -1,5 +1,6 @@
 import Actions
 
+@available(iOS 17.0, *)
 extension Action {
   func toMap() -> [String: Any?] {
     return [

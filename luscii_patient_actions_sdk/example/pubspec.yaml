@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.2.3
   luscii_patient_actions_sdk:
     # When depending on this package from a real application you should use:
     #   luscii_patient_actions_sdk: ^x.y.z
