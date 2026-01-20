@@ -46,19 +46,9 @@ Pod::Spec.new do |s|
   # Include the frameworks as vendored frameworks
   s.vendored_frameworks = 'Actions.xcframework', 'Centraal.xcframework', 'HTTPii.xcframework', 'Measurements.xcframework'
 
-  # Specify that this pod builds a static framework to prevent multiple embeddings
-  s.static_framework = true
-
   # Exclude i386 architecture for simulator builds
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/luscii_patient_actions_sdk_ios',
-    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
-  }
-
-  s.user_target_xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/luscii_patient_actions_sdk_ios',
-    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386'
   }
 end
