@@ -16,9 +16,26 @@ class MethodChannelLusciiPatientActionsSdk
   final eventChannel = const EventChannel('luscii_patient_actions_sdk/events');
 
   @override
-  Future<void> initialize({bool androidDynamicTheming = false}) async {
-    await methodChannel.invokeMethod<void>('initialize', <String, bool>{
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+    LusciiEnvironment environment = LusciiEnvironment.production,
+  }) async {
+    String environmentString = 'production';
+    switch (environment) {
+      case LusciiEnvironment.production:
+        environmentString = 'production';
+        break;
+      case LusciiEnvironment.acceptance:
+        environmentString = 'accept';
+        break;
+      case LusciiEnvironment.test:
+        environmentString = 'test';
+        break;
+    }
+
+    await methodChannel.invokeMethod<void>('initialize', <String, dynamic>{
       'androidDynamicTheming': androidDynamicTheming,
+      'environment': environmentString,
     });
   }
 

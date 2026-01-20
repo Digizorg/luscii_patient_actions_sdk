@@ -1,6 +1,18 @@
 import 'package:luscii_patient_actions_sdk_platform_interface/src/method_channel_luscii_patient_actions_sdk.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+/// The environment to use for the Luscii SDK.
+enum LusciiEnvironment {
+  /// The production environment.
+  production,
+
+  /// The acceptance environment.
+  acceptance,
+
+  /// The test environment.
+  test,
+}
+
 /// The interface that implementations of
 /// luscii_patient_actions_sdk must implement.
 ///
@@ -33,7 +45,10 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
   }
 
   /// Initialize the SDK.
-  Future<void> initialize({bool androidDynamicTheming});
+  Future<void> initialize({
+    bool androidDynamicTheming,
+    LusciiEnvironment environment,
+  });
 
   /// Authenticate the user with the given token.
   Future<void> authenticate(String apiKey);
