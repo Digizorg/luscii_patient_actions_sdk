@@ -216,7 +216,9 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val actions = luscii!!.getTodayActions()
+                        val todayActions = luscii!!.getTodayActions()
+                        val selfCareActions = luscii!!.getSelfCareActions()
+                        val actions = todayActions + selfCareActions
                         val action = actions.firstOrNull { it.id.toString() == actionId }
                         if (action == null) {
                             return@launch result.error(
