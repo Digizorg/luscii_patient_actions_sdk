@@ -3,7 +3,7 @@ import UIKit
 import Actions
 
 public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
-  private let luscii = Luscii()
+  private var luscii: Luscii?
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     // Setup main channel
@@ -20,6 +20,24 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    case "initialize":
+      guard let args = call.arguments as? [String: Any],
+            let environment = args["environment"] as? String else {
+        return result(LusciiFlutterSdkError.invalidArguments("Missing environment").flutterError)
+      }
+
+      if let defaults = UserDefaults(suiteName: "com.luscii.Actions") {
+        if environment == "accept" {
+          defaults.set("accept", forKey: "com.luscii.ActionsServerEnvironment")
+        } else if environment == "test" {
+          defaults.set("test", forKey: "com.luscii.ActionsServerEnvironment")
+        } else {
+          defaults.removeObject(forKey: "com.luscii.ActionsServerEnvironment")
+        }
+      }
+
+      luscii = Luscii()
+      result(nil)
     case "authenticate":
       // Check if argument is a String
       guard let value = call.arguments as? String else {
@@ -32,6 +50,9 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
         return result(error.flutterError)
       }
       Task {
+        guard let luscii = self.luscii else {
+          return result(LusciiFlutterSdkError.notInitialized.flutterError)
+        }
         do {
           try await luscii.authenticate(apiKey: value)
           // Return void/nil if the call succeeds
@@ -46,6 +67,9 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       }
     case "getTodayActions":
       Task {
+        guard let luscii = self.luscii else {
+          return result(LusciiFlutterSdkError.notInitialized.flutterError)
+        }
         do {
           let actions = try await luscii.actions().map { $0.toMap() }
           return result(actions)
@@ -63,6 +87,9 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
         return result(error.flutterError)
       }
       Task {
+        guard let luscii = self.luscii else {
+          return result(LusciiFlutterSdkError.notInitialized.flutterError)
+        }
         do {
           let actions = try await luscii.actions()
           let matchingAction = actions.first(where: { $0.id.uuidString == actionId })
@@ -82,7 +109,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
           }
           DispatchQueue.main.async {
             do {
-              try self.luscii.launchActionFlow(for: matchingAction, on: rootViewController)
+              try luscii.launchActionFlow(for: matchingAction, on: rootViewController)
             } catch {
               if error is LusciiAuthenticationError {
                 return self.handleAuthenticationError(error: error, result: result)
