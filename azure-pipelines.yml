@@ -57,7 +57,10 @@ stages:
       - bash: |
           set -euo pipefail
           npm i -g cspell
-          cspell "**/*.md" \
+          cd "$(System.DefaultWorkingDirectory)"
+          cspell lint \
+            --config ".github/cspell.json" \
+            "**/*.md" \
             --exclude "brick/**" \
             --exclude "**/build/**" \
             --exclude "**/.dart_tool/**"
