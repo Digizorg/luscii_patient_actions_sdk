@@ -57,7 +57,10 @@ void main() {
 
       expect(log, hasLength(1));
       expect(log.first.method, 'initialize');
-      expect(log.first.arguments, {'androidDynamicTheming': false});
+      expect(log.first.arguments, {
+        'androidDynamicTheming': false,
+        'iOSEnvironment': 'production',
+      });
 
       // Clear log and test with custom value
       log.clear();
@@ -65,7 +68,10 @@ void main() {
 
       expect(log, hasLength(1));
       expect(log.first.method, 'initialize');
-      expect(log.first.arguments, {'androidDynamicTheming': true});
+      expect(log.first.arguments, {
+        'androidDynamicTheming': true,
+        'iOSEnvironment': 'production',
+      });
     });
 
     test('authenticate sends correct method call', () async {
