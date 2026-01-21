@@ -1,0 +1,284 @@
+name: luscii_patient_actions_sdk_$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - azure-pipelines.yml
+      - .github/workflows/luscii_patient_actions_sdk.yaml
+      - luscii_patient_actions_sdk/**
+
+pr:
+  autoCancel: true
+  paths:
+    include:
+      - azure-pipelines.yml
+      - .github/workflows/luscii_patient_actions_sdk.yaml
+      - luscii_patient_actions_sdk/**
+
+variables:
+  - group: "Mobile Luscii Patient SDK"
+
+  - name: FLUTTER_VERSION
+    value: "3.38.7"
+  - name: FLUTTER_CHANNEL
+    value: "stable"
+  - name: PKG_DIR
+    value: "luscii_patient_actions_sdk"
+  - name: EXAMPLE_DIR
+    value: "luscii_patient_actions_sdk/example"
+  - name: MIN_COVERAGE
+    value: "70"
+  - name: AVD_NAME
+    value: "avd_api34_google"
+  - name: ANDROID_API
+    value: "34"
+
+stages:
+- stage: CI
+  jobs:
+  # ----------------------------
+  # Spell check (replacement for VeryGood reusable workflow)
+  # ----------------------------
+  - job: spell_check
+    displayName: "Spell check (Markdown)"
+    pool:
+      name: "man-devops-pool-prod"
+      demands:
+        - Agent.OS -equals Linux
+    steps:
+      - checkout: self
+      - task: UseNode@1
+        inputs:
+          version: "20.x"
+      - bash: |
+          set -euo pipefail
+          npm i -g cspell
+          cspell "**/*.md" \
+            --exclude "brick/**" \
+            --exclude "**/build/**" \
+            --exclude "**/.dart_tool/**"
+        displayName: "Run cspell"
+
+  # ----------------------------
+  # Flutter package build/test + coverage gate
+  # ----------------------------
+  - job: build
+    displayName: "Flutter package CI"
+    dependsOn: spell_check
+    pool:
+      name: "man-devops-pool-prod"
+      demands:
+        - Agent.OS -equals Linux
+    steps:
+      - checkout: self
+
+      - task: Cache@2
+        displayName: "Cache pub cache"
+        inputs:
+          key: 'pub | "$(Agent.OS)" | $(PKG_DIR)/pubspec.lock'
+          restoreKeys: |
+            pub | "$(Agent.OS)"
+          path: "$(Pipeline.Workspace)/.pub-cache"
+
+      - bash: |
+          set -euo pipefail
+          echo "Using pub cache at $(Pipeline.Workspace)/.pub-cache"
+          export PUB_CACHE="$(Pipeline.Workspace)/.pub-cache"
+
+          if ! command -v flutter >/dev/null 2>&1; then
+            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) on the Linux runner and ensure it's on PATH."
+            exit 1
+          fi
+
+          flutter --version
+          cd "$(PKG_DIR)"
+          flutter pub get
+          dart format --output=none --set-exit-if-changed .
+          flutter analyze
+          flutter test --coverage
+        displayName: "Format, analyze, test with coverage"
+
+      - bash: |
+          set -euo pipefail
+          cd "$(PKG_DIR)"
+          python3 - << 'PY'
+          import pathlib, sys, os
+          min_cov = float(os.environ.get("MIN_COVERAGE","70"))
+          p = pathlib.Path("coverage/lcov.info")
+          if not p.exists():
+            print("coverage/lcov.info not found")
+            sys.exit(1)
+
+          total = hit = 0
+          for line in p.read_text().splitlines():
+            if line.startswith("DA:"):
+              _, rest = line.split(":", 1)
+              _, hits = rest.split(",", 1)
+              total += 1
+              if int(hits) > 0:
+                hit += 1
+
+          cov = (hit / total * 100.0) if total else 0.0
+          print(f"Line coverage: {cov:.2f}% ({hit}/{total})")
+          if cov + 1e-9 < min_cov:
+            print(f"Coverage below minimum ({min_cov}%)")
+            sys.exit(1)
+          PY
+        displayName: "Enforce minimum coverage ($(MIN_COVERAGE)%)"
+        env:
+          MIN_COVERAGE: $(MIN_COVERAGE)
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish coverage artifact"
+        condition: always()
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/$(PKG_DIR)/coverage"
+          artifact: "coverage"
+          publishLocation: "pipeline"
+
+  # ----------------------------
+  # Android E2E (Patrol) on self-hosted Linux
+  # ----------------------------
+  - job: android
+    displayName: "Android E2E (Patrol)"
+    dependsOn: build
+    pool:
+      name: "man-devops-pool-prod"
+      demands:
+        - Agent.OS -equals Linux
+    steps:
+      - checkout: self
+
+      - bash: |
+          set -euo pipefail
+          if ! command -v flutter >/dev/null 2>&1; then
+            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) and ensure it's on PATH."
+            exit 1
+          fi
+          flutter --version
+          cd "$(EXAMPLE_DIR)"
+          flutter pub global activate patrol_cli
+          flutter pub get
+        displayName: "Install Patrol + deps"
+
+      - bash: |
+          set -euo pipefail
+
+          # Expect Android SDK/emulator installed on the agent (recommended).
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
+          export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
+
+          if ! command -v sdkmanager >/dev/null 2>&1; then
+            echo "sdkmanager not found. Install Android cmdline-tools on the Linux agent."
+            exit 1
+          fi
+
+          yes | sdkmanager \
+            "platform-tools" \
+            "platforms;android-$(ANDROID_API)" \
+            "system-images;android-$(ANDROID_API);google_apis;x86_64" \
+            "emulator"
+
+          if ! avdmanager list avd | grep -q "$(AVD_NAME)"; then
+            echo "no" | avdmanager create avd -n "$(AVD_NAME)" -k "system-images;android-$(ANDROID_API);google_apis;x86_64" --force
+          fi
+
+          emulator -avd "$(AVD_NAME)" -no-window -no-audio -gpu swiftshader_indirect -no-snapshot -wipe-data &
+          adb wait-for-device
+
+          boot=""
+          for i in $(seq 1 60); do
+            boot="$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')"
+            if [ "$boot" = "1" ]; then break; fi
+            sleep 5
+          done
+          if [ "$boot" != "1" ]; then
+            echo "Emulator failed to boot"
+            adb devices
+            exit 1
+          fi
+
+          cd "$(EXAMPLE_DIR)"
+          patrol test patrol_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY"
+        displayName: "Run Android E2E"
+        env:
+          LUSCII_API_KEY: $(LUSCII_API_KEY)
+          GITHUB_MAVEN_USERNAME: $(GITHUB_MAVEN_USERNAME)
+          GITHUB_MAVEN_TOKEN: $(GITHUB_MAVEN_TOKEN)
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Android test reports"
+        condition: always()
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/$(EXAMPLE_DIR)/build"
+          artifact: "android-test-reports"
+          publishLocation: "pipeline"
+
+  # ----------------------------
+  # iOS E2E (Patrol) on self-hosted macOS
+  # ----------------------------
+  - job: ios
+    displayName: "iOS E2E (Patrol)"
+    dependsOn: build
+    pool:
+      name: "SelfHostedMobilePool"
+      demands:
+        - Agent.OS -equals Darwin
+    steps:
+      - checkout: self
+
+      - bash: |
+          set -euo pipefail
+          # Update this path to the Xcode installed on your macOS agent, if needed:
+          # sudo xcode-select -s /Applications/Xcode_26.2.app
+          xcodebuild -version
+        displayName: "Verify Xcode"
+
+      - bash: |
+          set -euo pipefail
+          if ! command -v flutter >/dev/null 2>&1; then
+            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) and ensure it's on PATH."
+            exit 1
+          fi
+          flutter --version
+
+          cd "$(EXAMPLE_DIR)"
+          flutter pub global activate patrol_cli
+          flutter pub get
+        displayName: "Install Patrol + deps"
+
+      - bash: |
+          set -euo pipefail
+          cd "$(EXAMPLE_DIR)/ios"
+          pod install --repo-update
+        displayName: "CocoaPods install"
+
+      - bash: |
+          set -euo pipefail
+          # Create + boot simulator matching "iPhone 17" name where possible
+          RUNTIME_ID="$(xcrun simctl list runtimes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([r["identifier"] for r in d["runtimes"] if r.get("isAvailable")][-1])')"
+          DEVICE_TYPE="$(xcrun simctl list devicetypes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([t["identifier"] for t in d["devicetypes"] if "iPhone 17" in t["name"]][-1])')"
+          UDID="$(xcrun simctl create "iPhone 17 CI" "$DEVICE_TYPE" "$RUNTIME_ID")"
+          xcrun simctl boot "$UDID"
+          echo "##vso[task.setvariable variable=SIM_UDID]$UDID"
+        displayName: "Create + boot iOS simulator"
+
+      - bash: |
+          set -euo pipefail
+          cd "$(EXAMPLE_DIR)"
+          patrol test patrol_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY" --device="$(SIM_UDID)"
+        displayName: "Run iOS E2E"
+        env:
+          LUSCII_API_KEY: $(LUSCII_API_KEY)
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish iOS test reports"
+        condition: always()
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/$(EXAMPLE_DIR)/build"
+          artifact: "ios-test-reports"
+          publishLocation: "pipeline"
