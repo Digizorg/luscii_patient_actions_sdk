@@ -188,7 +188,16 @@ stages:
           fi
 
           # 1) Accept licenses (quietly) – avoids broken pipe issues
+          # Accept licenses but don't fail the step due to `yes` getting SIGPIPE
+          set +o pipefail
           yes | sdkmanager --licenses >/dev/null
+          LIC_RC=${PIPESTATUS[1]}
+          set -o pipefail
+
+          if [ "$LIC_RC" -ne 0 ]; then
+            echo "sdkmanager --licenses failed with exit code $LIC_RC"
+            exit "$LIC_RC"
+          fi
 
           # 2) Install components (NO piping of sdkmanager output)
           sdkmanager \
