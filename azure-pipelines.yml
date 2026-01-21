@@ -174,8 +174,8 @@ stages:
           set -euo pipefail
           # Update this path to the Xcode installed on your macOS agent, if needed:
           # sudo xcode-select -s /Applications/Xcode_26.2.app
-          xcodebuild -version
-        displayName: "Verify Xcode"
+          xcodes select 26.2
+        displayName: "Select Xcode Version"
 
       - bash: |
           set -euo pipefail
@@ -195,7 +195,7 @@ stages:
       - bash: |
           set -euo pipefail
           # Create + boot simulator matching "iPhone 17" name where possible
-          RUNTIME_ID="$(xcrun simctl list runtimes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([r["identifier"] for r in d["runtimes"] if r.get("isAvailable")][-1])')"
+          RUNTIME_ID="$(xcrun simctl list runtimes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([r["identifier"] for r in d["runtimes"] if r.get("isAvailable") and "iOS" in r.get("name", "")][-1])')"
           DEVICE_TYPE="$(xcrun simctl list devicetypes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([t["identifier"] for t in d["devicetypes"] if "iPhone 17" in t["name"]][-1])')"
           UDID="$(xcrun simctl create "iPhone 17 CI" "$DEVICE_TYPE" "$RUNTIME_ID")"
           xcrun simctl boot "$UDID"
