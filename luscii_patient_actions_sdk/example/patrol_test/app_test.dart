@@ -55,11 +55,13 @@ void main() {
           }
         }
         fail(
-          'API call did not complete within timeout. Found texts: ${foundTexts.join(", ")}',
+          'API call did not complete within timeout. '
+          'Found texts: ${foundTexts.join(", ")}',
         );
       } catch (e) {
         fail(
-          'API call did not complete within timeout. Could not enumerate widgets: $e',
+          'API call did not complete within timeout. '
+          'Could not enumerate widgets: $e',
         );
       }
     }
@@ -70,7 +72,8 @@ void main() {
       fail('SDK returned an error');
     }
 
-    // If no error, verify that either actions are shown or a "No actions" message is displayed
+    // If no error, verify that either actions are shown or
+    // a "No actions" message is displayed
     // This makes the test resilient regardless of what the backend returns
     var actionsVisible = false;
 
