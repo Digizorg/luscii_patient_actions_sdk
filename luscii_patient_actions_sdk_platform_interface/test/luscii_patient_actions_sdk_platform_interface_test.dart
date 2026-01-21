@@ -3,7 +3,10 @@ import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_act
 
 class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
   @override
-  Future<void> initialize({bool androidDynamicTheming = false}) {
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+    LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
+  }) {
     // Successful initialization
     return Future.value();
   }

@@ -34,6 +34,21 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
     }
 
     switch call.method {
+    case "initialize":
+      if let arguments = call.arguments as? [String: Any],
+         let environment = arguments["iOSEnvironment"] as? String {
+         
+         if let defaults = UserDefaults(suiteName: "com.luscii.Actions") {
+             if environment == "acceptance" {
+                 defaults.set("accept", forKey: "com.luscii.ActionsServerEnvironment")
+             } else {
+                 defaults.removeObject(forKey: "com.luscii.ActionsServerEnvironment")
+             }
+             // Force recreation of Luscii instance to pick up new environment settings
+             _luscii = nil
+         }
+      }
+      return result(nil)
     case "authenticate":
       // Check if argument is a String
       guard let value = call.arguments as? String else {

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/error/luscii_sdk_exception.dart';
 import 'package:luscii_patient_actions_sdk_platform_interface/luscii_patient_actions_sdk_platform_interface.dart';
 
-/// An implementation of [LusciiPatientActionsSdkPlatform]
-/// that uses method channels.
+/// An implementation of [LusciiPatientActionsSdkPlatform] that uses method
+/// channels.
 class MethodChannelLusciiPatientActionsSdk
     extends LusciiPatientActionsSdkPlatform {
   /// The method channel used to interact with the native platform.
@@ -16,9 +16,13 @@ class MethodChannelLusciiPatientActionsSdk
   final eventChannel = const EventChannel('luscii_patient_actions_sdk/events');
 
   @override
-  Future<void> initialize({bool androidDynamicTheming = false}) async {
-    await methodChannel.invokeMethod<void>('initialize', <String, bool>{
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+    LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
+  }) async {
+    await methodChannel.invokeMethod<void>('initialize', <String, dynamic>{
       'androidDynamicTheming': androidDynamicTheming,
+      'iOSEnvironment': iOSEnvironment.name,
     });
   }
 

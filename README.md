@@ -119,6 +119,30 @@ FlutterActivity is not supported by Hilt, so we need to change it to a FlutterFr
 
 
 
+## Environments
+
+By default, the SDK targets the **production** environment. You can switch to the **acceptance** environment for testing purposes.
+
+### Android
+
+To use the acceptance SDK on Android, add the following property to your `android/gradle.properties` file:
+
+```properties
+lusciiUseAcceptanceSdk=true
+```
+
+This will change the underlying dependency from `com.luscii:sdk` to `com.luscii:sdk-acceptance`.
+
+### iOS
+
+To target the acceptance environment on iOS, specify the `iOSEnvironment` parameter when initializing the SDK:
+
+```dart
+final result = await luscii_sdk.initialize(
+  iOSEnvironment: LusciiEnvironment.acceptance,
+);
+```
+
 ## Support
 
 This package is used in production and should be stable, but still expect frequent big API call changes
