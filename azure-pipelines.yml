@@ -182,6 +182,9 @@ stages:
           export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
           export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$(FlutterToolPath):$PATH"
 
+          export ANDROID_AVD_HOME="$(Pipeline.Workspace)/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+
           if ! command -v sdkmanager >/dev/null 2>&1; then
             echo "sdkmanager not found. Install Android cmdline-tools on the Linux agent."
             exit 1
@@ -206,11 +209,32 @@ stages:
             "system-images;android-$(ANDROID_API);google_apis;x86_64" \
             "emulator"
 
-          if ! avdmanager list avd | grep -q "$(AVD_NAME)"; then
-            echo "no" | avdmanager create avd -n "$(AVD_NAME)" -k "system-images;android-$(ANDROID_API);google_apis;x86_64" --force
+          export ANDROID_AVD_HOME="$(Pipeline.Workspace)/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME"
+          echo "HOME=$HOME"
+
+          # Ensure the system image exists (sdkmanager step should have installed it)
+          IMAGE="system-images;android-$(ANDROID_API);google_apis;x86_64"
+
+          # Create AVD if missing
+          if ! "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" list avd | grep -q "Name: $(AVD_NAME)"; then
+            echo "Creating AVD $(AVD_NAME)"
+            printf "no\n" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
+              -n "$(AVD_NAME)" \
+              -k "$IMAGE" \
+              --force \
+              --path "$ANDROID_AVD_HOME/$(AVD_NAME).avd"
           fi
 
+          echo "Available AVDs:"
+          emulator -list-avds || true
+
+          # Start emulator using the same AVD home
           emulator -avd "$(AVD_NAME)" -no-window -no-audio -gpu swiftshader_indirect -no-snapshot -wipe-data &
+          adb start-server
           adb wait-for-device
 
           boot=""
