@@ -1,5 +1,6 @@
 import Actions
 
+@available(iOS 17.0, *)
 extension Actions.ActionFlowResult.Status {
   func toString() -> String {
     switch self {

@@ -1,9 +1,18 @@
 import Flutter
 import UIKit
-import Actions
+@preconcurrency import Actions
 
 public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
-  private let luscii = Luscii()
+  private var _luscii: Any?
+  
+  /// Only make Luscii available when it's iOS 17 or higher
+  @available(iOS 17.0, *)
+  private var luscii: Luscii {
+    if _luscii == nil {
+      _luscii = Luscii()
+    }
+    return _luscii as! Luscii
+  }
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     // Setup main channel
@@ -19,6 +28,11 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard #available(iOS 17.0, *) else {
+      result(LusciiFlutterSdkError.unsupportedVersion.flutterError)
+      return
+    }
+
     switch call.method {
     case "authenticate":
       // Check if argument is a String
@@ -47,7 +61,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
     case "getTodayActions":
       Task {
         do {
-          let actions = try await luscii.actions().map { $0.toMap() }
+          let actions = try await luscii.todayActions().map { $0.toMap() }
           return result(actions)
         } catch {
           if error is LusciiAuthenticationError {
@@ -64,7 +78,9 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       }
       Task {
         do {
-          let actions = try await luscii.actions()
+          let todayActions = try await luscii.todayActions()
+          let selfcareActions = try await luscii.selfCareActions()
+          let actions = selfcareActions + todayActions
           let matchingAction = actions.first(where: { $0.id.uuidString == actionId })
           guard let matchingAction else {
             let error = LusciiFlutterSdkError.invalidArguments("Action not found")
@@ -91,6 +107,19 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
               }
             }
           }
+        } catch {
+          if error is LusciiAuthenticationError {
+            return handleAuthenticationError(error: error, result: result)
+          } else {
+            return result(LusciiFlutterSdkError.unknown.flutterError)
+          }
+        }
+      }
+    case "getSelfcareActions":
+      Task {
+        do {
+          let actions = try await luscii.selfCareActions().map { $0.toMap() }
+          return result(actions)
         } catch {
           if error is LusciiAuthenticationError {
             return handleAuthenticationError(error: error, result: result)

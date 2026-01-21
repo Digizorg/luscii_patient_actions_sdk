@@ -119,7 +119,6 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     }
                 }
             }
-
             "getTodayActions" -> {
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
@@ -132,6 +131,38 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val actions = luscii!!.getTodayActions().map { it.toMap() }
+                        result.success(actions)
+                    } catch (e: UnauthenticatedException) {
+                        result.error(
+                            LusciiFlutterSdkError.UNAUTHORIZED.code,
+                            LusciiFlutterSdkError.UNAUTHORIZED.message,
+                            e.message
+                        )
+                        return@launch
+                    } catch (e: Exception) {
+                        // TODO: Handle more errors
+                        result.error(
+                            LusciiFlutterSdkError.UNKNOWN.code,
+                            LusciiFlutterSdkError.UNKNOWN.message,
+                            e.message
+                        )
+                        return@launch
+                    }
+                    return@launch
+                }
+            }
+            "getSelfcareActions" -> {
+                // Check if the luscii instance is initialized
+                if (luscii == null) {
+                    return result.error(
+                        LusciiFlutterSdkError.NOT_INITIALIZED.code,
+                        LusciiFlutterSdkError.NOT_INITIALIZED.message,
+                        null
+                    )
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val actions = luscii!!.getSelfCareActions().map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
                         result.error(
@@ -185,7 +216,9 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val actions = luscii!!.getTodayActions()
+                        val todayActions = luscii!!.getTodayActions()
+                        val selfCareActions = luscii!!.getSelfCareActions()
+                        val actions = todayActions + selfCareActions
                         val action = actions.firstOrNull { it.id.toString() == actionId }
                         if (action == null) {
                             return@launch result.error(

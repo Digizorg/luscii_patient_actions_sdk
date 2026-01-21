@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:luscii_patient_actions_sdk/luscii_patient_actions_sdk.dart'
     as luscii_sdk;
 import 'package:luscii_patient_actions_sdk/model/luscii_sdk_action.dart';
@@ -120,6 +121,37 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getSelfcareActions() async {
+    // Reset error state before making the request
+    setState(() {
+      errorMessage = null;
+    });
+
+    try {
+      debugPrint('Starting getSelfcareActions API call...');
+      final result = await luscii_sdk.getSelfcareActions();
+      switch (result) {
+        case LusciiSdkSuccess(value: final actions):
+          debugPrint('Successfully received ${actions.length} actions');
+          setState(() {
+            this.actions = actions;
+            errorMessage = null;
+          });
+        case LusciiSdkFailure(exception: final exception):
+          debugPrint('Failed to get actions');
+          debugPrint(exception.reason);
+          setState(() {
+            errorMessage = 'Error: ${exception.reason}';
+          });
+      }
+    } catch (e) {
+      debugPrint('Unexpected error in getActions: $e');
+      setState(() {
+        errorMessage = 'Error: Unexpected error occurred - $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +160,11 @@ class _HomePageState extends State<HomePage> {
         children: [
           TextButton(
             onPressed: getTodayActions,
-            child: const Text('Get actions'),
+            child: const Text('Get today actions'),
+          ),
+          TextButton(
+            onPressed: getSelfcareActions,
+            child: const Text('Get selfcare actions'),
           ),
           if (errorMessage != null)
             Padding(
@@ -181,6 +217,9 @@ class _HomePageState extends State<HomePage> {
                       return GestureDetector(
                         onTap: () => luscii_sdk.launchAction(action.id),
                         child: ListTile(
+                          leading: action.icon != null
+                              ? SvgPicture.network(action.icon!)
+                              : null,
                           title: Text('Action ${action.name}'),
                           subtitle: Text(message),
                         ),

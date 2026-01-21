@@ -11,10 +11,10 @@ void main() {
 
     // Verify the app started correctly
     expect($('LusciiPatientActionsSdk Example'), findsOneWidget);
-    expect($('Get actions'), findsOneWidget);
+    expect($('Get today actions'), findsOneWidget);
 
-    // Tap on the "Get actions" button
-    await $('Get actions').tap();
+    // Tap on the "Get today actions" button
+    await $('Get today actions').tap();
 
     // Give the UI a moment to start processing
     await $.pumpAndSettle();

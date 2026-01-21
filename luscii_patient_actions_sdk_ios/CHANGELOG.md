@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0+1] - 2026-01-20
+
+### Added
+- Added getSelfcareActions call for iOS and Android
+
 ## [0.6.0+1] - 2025-11-24
 
 ### Changed
@@ -19,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iOS implementation of luscii_patient_actions_sdk plugin
 - Requires iOS 15.5+
 
-[unreleased]: https://github.com/Luscii/luscii_patient_actions_sdk/compare/v0.6.0+1...HEAD
+[unreleased]: https://github.com/Luscii/luscii_patient_actions_sdk/compare/v0.7.0+1...HEAD
+[0.7.0+1]: https://github.com/Luscii/luscii_patient_actions_sdk/compare/v0.6.0+1...v0.7.0+1
 [0.6.0+1]: https://github.com/Luscii/luscii_patient_actions_sdk/compare/v0.5.0+1...v0.6.0+1
 [0.5.0+1]: https://github.com/Luscii/luscii_patient_actions_sdk/releases/tag/v0.5.0+1
