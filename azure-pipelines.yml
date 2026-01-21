@@ -167,7 +167,33 @@ stages:
           channel: "$(FLUTTER_CHANNEL)"
           version: "custom"
           customVersion: "$(FLUTTER_VERSION)"
+      
+      - bash: |
+          set -euo pipefail
 
+          # Check if KVM exists at all
+          if [ ! -e /dev/kvm ]; then
+            echo "/dev/kvm not found. This host likely has no KVM/nested virtualization enabled."
+            exit 1
+          fi
+
+          # Make /dev/kvm accessible to the agent user
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+          # Show ownership/permissions
+          ls -l /dev/kvm
+          id
+          groups
+
+          # Quick capability check
+          if command -v kvm-ok >/dev/null 2>&1; then
+            kvm-ok || true
+          else
+            echo "kvm-ok not installed (ok)."
+          fi
+        displayName: "Enable KVM (hardware acceleration)"
       - bash: |
           set -euo pipefail
           $(FlutterToolPath)/flutter --version
@@ -285,34 +311,6 @@ stages:
           channel: "$(FLUTTER_CHANNEL)"
           version: "custom"
           customVersion: "$(FLUTTER_VERSION)"
-
-
-      - bash: |
-          set -euo pipefail
-
-          # Check if KVM exists at all
-          if [ ! -e /dev/kvm ]; then
-            echo "/dev/kvm not found. This host likely has no KVM/nested virtualization enabled."
-            exit 1
-          fi
-
-          # Make /dev/kvm accessible to the agent user
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-          # Show ownership/permissions
-          ls -l /dev/kvm
-          id
-          groups
-
-          # Quick capability check
-          if command -v kvm-ok >/dev/null 2>&1; then
-            kvm-ok || true
-          else
-            echo "kvm-ok not installed (ok)."
-          fi
-        displayName: "Enable KVM (hardware acceleration)"
 
       - bash: |
           set -euo pipefail
