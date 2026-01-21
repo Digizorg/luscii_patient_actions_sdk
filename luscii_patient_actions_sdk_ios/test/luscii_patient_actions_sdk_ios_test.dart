@@ -50,9 +50,22 @@ void main() {
     });
 
     test('initialize completes successfully', () async {
+      final log = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
+            methodCall,
+          ) async {
+            log.add(methodCall);
+            return null;
+          });
+
       await expectLater(lusciiPatientActionsSdk.initialize(), completes);
-      // Initialize is a no-op on iOS, so no method call should be logged
-      expect(log, isEmpty);
+      expect(log, hasLength(1));
+      expect(log.first.method, 'initialize');
+      expect(log.first.arguments, {
+        'useDynamicColors': false,
+        'iOSEnvironment': 'production',
+      });
     });
 
     test('authenticate sends correct method call', () async {

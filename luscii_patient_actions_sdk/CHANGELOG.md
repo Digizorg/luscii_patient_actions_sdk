@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0+1] - 2026-01-21
+
+### Added
+- Added support for configuring SDK environments (Production, Acceptance, Test).
+- Android: Added `lusciiUseAcceptanceSdk` and `lusciiUseTestSdk` Gradle properties to select the environment.
+- iOS: Added `iOSEnvironment` parameter to `initialize` method to select the environment.
+
 ## [0.7.0+1] - 2026-01-20
 
 ### Added

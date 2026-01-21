@@ -52,20 +52,25 @@ void main() {
     });
 
     test('initialize sends correct method call with parameters', () async {
-      // Test with default value
       await lusciiPatientActionsSdk.initialize();
 
       expect(log, hasLength(1));
       expect(log.first.method, 'initialize');
-      expect(log.first.arguments, {'androidDynamicTheming': false});
+      expect(log.first.arguments, {
+        'useDynamicColors': false,
+        'iOSEnvironment': 'production',
+      });
 
-      // Clear log and test with custom value
       log.clear();
+
       await lusciiPatientActionsSdk.initialize(androidDynamicTheming: true);
 
       expect(log, hasLength(1));
       expect(log.first.method, 'initialize');
-      expect(log.first.arguments, {'androidDynamicTheming': true});
+      expect(log.first.arguments, {
+        'useDynamicColors': true,
+        'iOSEnvironment': 'production',
+      });
     });
 
     test('authenticate sends correct method call', () async {

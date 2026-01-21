@@ -31,7 +31,11 @@ String get apiKey {
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   debugPrint('Initializing SDK...');
-  final initialize = await luscii_sdk.initialize(androidDynamicTheming: true);
+  final initialize = await luscii_sdk.initialize(
+    androidDynamicTheming: true,
+    // ignore: avoid_redundant_argument_values
+    iOSEnvironment: luscii_sdk.LusciiEnvironment.production,
+  );
   if (initialize is LusciiSdkSuccess) {
     debugPrint('SDK initialized successfully');
   } else if (initialize is LusciiSdkFailure) {

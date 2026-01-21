@@ -22,10 +22,14 @@ class LusciiPatientActionsSdkIOS extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<void> initialize({bool androidDynamicTheming = false}) async {
-    // iOS does not support dynamic theming
-    // and does not require initialization
-    return Future.value();
+  Future<void> initialize({
+    bool androidDynamicTheming = false,
+    LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
+  }) async {
+    await methodChannel.invokeMethod<void>('initialize', <String, dynamic>{
+      'useDynamicColors': androidDynamicTheming,
+      'iOSEnvironment': iOSEnvironment.name,
+    });
   }
 
   @override
