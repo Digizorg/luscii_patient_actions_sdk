@@ -179,7 +179,6 @@ stages:
       - bash: |
           set -euo pipefail
 
-          # Expect Android SDK/emulator installed on the agent (recommended).
           export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
           export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$(FlutterToolPath):$PATH"
 
@@ -188,7 +187,11 @@ stages:
             exit 1
           fi
 
-          yes | sdkmanager \
+          # 1) Accept licenses (quietly) – avoids broken pipe issues
+          yes | sdkmanager --licenses >/dev/null
+
+          # 2) Install components (NO piping of sdkmanager output)
+          sdkmanager \
             "platform-tools" \
             "platforms;android-$(ANDROID_API)" \
             "system-images;android-$(ANDROID_API);google_apis;x86_64" \
