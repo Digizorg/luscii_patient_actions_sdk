@@ -11,18 +11,18 @@ export 'package:luscii_patient_actions_sdk_platform_interface/model/luscii_envir
 LusciiPatientActionsSdkPlatform get _platform =>
     LusciiPatientActionsSdkPlatform.instance;
 
-  /// Initialize the SDK.
-  Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> initialize({
-    bool androidDynamicTheming = false,
-    LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
-  }) async {
-    try {
-      await _platform.initialize(
-        androidDynamicTheming: androidDynamicTheming,
-        iOSEnvironment: iOSEnvironment,
-      );
-      return const LusciiSdkSuccess(LusciiSdkNoResponse());
-    } on PlatformException catch (e) {
+/// Initialize the SDK.
+Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> initialize({
+  bool androidDynamicTheming = false,
+  LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
+}) async {
+  try {
+    await _platform.initialize(
+      androidDynamicTheming: androidDynamicTheming,
+      iOSEnvironment: iOSEnvironment,
+    );
+    return const LusciiSdkSuccess(LusciiSdkNoResponse());
+  } on PlatformException catch (e) {
     return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
   }
 }
