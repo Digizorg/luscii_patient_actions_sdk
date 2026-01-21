@@ -43,6 +43,10 @@ void main() {
 
     final mockEventData = {'actionID': 'action1', 'status': 'completed'};
 
+    setUpAll(() {
+      registerFallbackValue(LusciiEnvironment.production);
+    });
+
     setUp(() {
       lusciiPatientActionsSdkPlatform = MockLusciiPatientActionsSdkPlatform();
       LusciiPatientActionsSdkPlatform.instance =
@@ -53,6 +57,7 @@ void main() {
       when(
         () => lusciiPatientActionsSdkPlatform.initialize(
           androidDynamicTheming: any(named: 'androidDynamicTheming'),
+          iOSEnvironment: any(named: 'iOSEnvironment'),
         ),
       ).thenAnswer((_) => Future.value());
 
@@ -61,6 +66,7 @@ void main() {
       verify(
         () => lusciiPatientActionsSdkPlatform.initialize(
           androidDynamicTheming: true,
+          iOSEnvironment: any(named: 'iOSEnvironment'),
         ),
       ).called(1);
 
@@ -77,6 +83,7 @@ void main() {
       when(
         () => lusciiPatientActionsSdkPlatform.initialize(
           androidDynamicTheming: any(named: 'androidDynamicTheming'),
+          iOSEnvironment: any(named: 'iOSEnvironment'),
         ),
       ).thenThrow(PlatformException(code: '1', message: 'Invalid arguments'));
 

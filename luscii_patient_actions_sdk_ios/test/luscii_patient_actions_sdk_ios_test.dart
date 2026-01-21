@@ -63,7 +63,7 @@ void main() {
       expect(log, hasLength(1));
       expect(log.first.method, 'initialize');
       expect(log.first.arguments, {
-        'androidDynamicTheming': false,
+        'useDynamicColors': false,
         'iOSEnvironment': 'production',
       });
     });

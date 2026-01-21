@@ -29,7 +29,7 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
     LusciiEnvironment iOSEnvironment = LusciiEnvironment.production,
   }) async {
     await methodChannel.invokeMethod<void>('initialize', <String, dynamic>{
-      'androidDynamicTheming': androidDynamicTheming,
+      'useDynamicColors': androidDynamicTheming,
       'iOSEnvironment': iOSEnvironment.name,
     });
   }
