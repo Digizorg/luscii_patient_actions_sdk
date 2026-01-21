@@ -1,0 +1,220 @@
+name: luscii_patient_actions_sdk_$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - azure-pipelines.yml
+      - .github/workflows/luscii_patient_actions_sdk.yaml
+      - luscii_patient_actions_sdk/**
+
+pr:
+  autoCancel: true
+  paths:
+    include:
+      - azure-pipelines.yml
+      - .github/workflows/luscii_patient_actions_sdk.yaml
+      - luscii_patient_actions_sdk/**
+
+variables:
+  - group: "Mobile Luscii Patient SDK"
+
+  - name: FLUTTER_VERSION
+    value: "3.38.7"
+  - name: FLUTTER_CHANNEL
+    value: "stable"
+  - name: PKG_DIR
+    value: "luscii_patient_actions_sdk"
+  - name: EXAMPLE_DIR
+    value: "luscii_patient_actions_sdk/example"
+  - name: MIN_COVERAGE
+    value: "70"
+  - name: AVD_NAME
+    value: "avd_api34_google"
+  - name: ANDROID_API
+    value: "34"
+
+stages:
+- stage: CI
+  jobs:
+  # ----------------------------
+  # Spell check (replacement for VeryGood reusable workflow)
+  # ----------------------------
+  - job: spell_check
+    displayName: "Spell check (Markdown)"
+    pool:
+      name: "man-devops-pool-prod"
+      demands:
+        - Agent.OS -equals Linux
+    steps:
+      - checkout: self
+      - task: UseNode@1
+        inputs:
+          version: "20.x"
+      - bash: |
+          set -euo pipefail
+          npm i -g cspell
+          cd "$(System.DefaultWorkingDirectory)"
+          cspell lint \
+            --config ".github/cspell.json" \
+            "**/*.md" \
+            --exclude "brick/**" \
+            --exclude "**/build/**" \
+            --exclude "**/.dart_tool/**"
+        displayName: "Run cspell"
+
+  # ----------------------------
+  # Flutter package build/test + coverage gate
+  # ----------------------------
+  - job: build
+    displayName: "Flutter package CI"
+    dependsOn: spell_check
+    pool:
+      name: "man-devops-pool-prod"
+      demands:
+        - Agent.OS -equals Linux
+    steps:
+      - checkout: self
+
+      - task: FlutterInstall@0
+        displayName: "Install Flutter"
+        inputs:
+          mode: "auto"
+          channel: "$(FLUTTER_CHANNEL)"
+          version: "custom"
+          customVersion: "$(FLUTTER_VERSION)"
+
+      - task: Cache@2
+        displayName: "Cache pub cache"
+        inputs:
+          key: 'pub | "$(Agent.OS)" | $(PKG_DIR)/pubspec.yaml | $(EXAMPLE_DIR)/pubspec.yaml'
+          restoreKeys: |
+            pub | "$(Agent.OS)" | $(PKG_DIR)/pubspec.yaml
+            pub | "$(Agent.OS)"
+          path: "$(Pipeline.Workspace)/.pub-cache"
+
+      - bash: |
+          set -euo pipefail
+          echo "Using pub cache at $(Pipeline.Workspace)/.pub-cache"
+          export PUB_CACHE="$(Pipeline.Workspace)/.pub-cache"
+
+          $(FlutterToolPath)/flutter --version
+          cd "$(PKG_DIR)"
+          $(FlutterToolPath)/flutter pub get
+          $(FlutterToolPath)/dart format --output=none --set-exit-if-changed .
+          $(FlutterToolPath)/flutter analyze
+          $(FlutterToolPath)/flutter test --coverage
+        displayName: "Format, analyze, test with coverage"
+
+      - bash: |
+          set -euo pipefail
+          cd "$(PKG_DIR)"
+          python3 - << 'PY'
+          import pathlib, sys, os
+          min_cov = float(os.environ.get("MIN_COVERAGE","70"))
+          p = pathlib.Path("coverage/lcov.info")
+          if not p.exists():
+            print("coverage/lcov.info not found")
+            sys.exit(1)
+
+          total = hit = 0
+          for line in p.read_text().splitlines():
+            if line.startswith("DA:"):
+              _, rest = line.split(":", 1)
+              _, hits = rest.split(",", 1)
+              total += 1
+              if int(hits) > 0:
+                hit += 1
+
+          cov = (hit / total * 100.0) if total else 0.0
+          print(f"Line coverage: {cov:.2f}% ({hit}/{total})")
+          if cov + 1e-9 < min_cov:
+            print(f"Coverage below minimum ({min_cov}%)")
+            sys.exit(1)
+          PY
+        displayName: "Enforce minimum coverage ($(MIN_COVERAGE)%)"
+        env:
+          MIN_COVERAGE: $(MIN_COVERAGE)
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish coverage artifact"
+        condition: always()
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/$(PKG_DIR)/coverage"
+          artifact: "coverage"
+          publishLocation: "pipeline"
+
+
+
+  # ----------------------------
+  # iOS E2E (Patrol) on self-hosted macOS
+  # ----------------------------
+  - job: ios
+    displayName: "iOS E2E (Patrol)"
+    dependsOn: build
+    pool:
+      name: "SelfHostedMobilePool"
+      demands:
+        - Agent.OS -equals Darwin
+    steps:
+      - checkout: self
+
+      - task: FlutterInstall@0
+        displayName: "Install Flutter"
+        inputs:
+          mode: "auto"
+          channel: "$(FLUTTER_CHANNEL)"
+          version: "custom"
+          customVersion: "$(FLUTTER_VERSION)"
+
+      - bash: |
+          set -euo pipefail
+          # Update this path to the Xcode installed on your macOS agent, if needed:
+          # sudo xcode-select -s /Applications/Xcode_26.2.app
+          xcodes select 26.2
+        displayName: "Select Xcode Version"
+
+      - bash: |
+          set -euo pipefail
+          $(FlutterToolPath)/flutter --version
+
+          cd "$(EXAMPLE_DIR)"
+          $(FlutterToolPath)/flutter pub global activate patrol_cli
+          $(FlutterToolPath)/flutter pub get
+        displayName: "Install Patrol + deps"
+
+      - bash: |
+          set -euo pipefail
+          cd "$(EXAMPLE_DIR)/ios"
+          pod install --repo-update
+        displayName: "CocoaPods install"
+
+      - bash: |
+          set -euo pipefail
+          # Create + boot simulator matching "iPhone 17" name where possible
+          RUNTIME_ID="$(xcrun simctl list runtimes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([r["identifier"] for r in d["runtimes"] if r.get("isAvailable") and "iOS" in r.get("name", "")][-1])')"
+          DEVICE_TYPE="$(xcrun simctl list devicetypes -j | python3 -c 'import json,sys;d=json.load(sys.stdin);print([t["identifier"] for t in d["devicetypes"] if "iPhone 17" in t["name"]][-1])')"
+          UDID="$(xcrun simctl create "iPhone 17 CI" "$DEVICE_TYPE" "$RUNTIME_ID")"
+          xcrun simctl boot "$UDID"
+          echo "##vso[task.setvariable variable=SIM_UDID]$UDID"
+        displayName: "Create + boot iOS simulator"
+
+      - bash: |
+          set -euo pipefail
+          export PATH="$HOME/.pub-cache/bin:$(FlutterToolPath):$PATH"
+          cd "$(EXAMPLE_DIR)"
+          patrol test patrol_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY" --device="$(SIM_UDID)"
+        displayName: "Run iOS E2E"
+        env:
+          LUSCII_API_KEY: $(LUSCII_API_KEY)
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish iOS test reports"
+        condition: always()
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/$(EXAMPLE_DIR)/build"
+          artifact: "ios-test-reports"
+          publishLocation: "pipeline"

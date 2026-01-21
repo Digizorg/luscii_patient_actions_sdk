@@ -130,7 +130,7 @@ This package is used in production and should be stable, but still expect freque
 | `launchAction(String actionId)` | ✅           | ✅               |
 | `actionFlowStream()`   | ✅           | ✅ 
 | `startSelfCareActivity()`   | ❌           | ❌ 
-| `getSelfCareActions()`   | ❌           | ❌              |
+| `getSelfCareActions()`   | ✅           | ✅              |
 
 
 ### Integration tests 🧪

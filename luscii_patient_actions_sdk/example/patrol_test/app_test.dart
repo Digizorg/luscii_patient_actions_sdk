@@ -11,10 +11,10 @@ void main() {
 
     // Verify the app started correctly
     expect($('LusciiPatientActionsSdk Example'), findsOneWidget);
-    expect($('Get actions'), findsOneWidget);
+    expect($('Get today actions'), findsOneWidget);
 
-    // Tap on the "Get actions" button
-    await $('Get actions').tap();
+    // Tap on the "Get today actions" button
+    await $('Get today actions').tap();
 
     // Give the UI a moment to start processing
     await $.pumpAndSettle();
@@ -55,11 +55,13 @@ void main() {
           }
         }
         fail(
-          'API call did not complete within timeout. Found texts: ${foundTexts.join(", ")}',
+          'API call did not complete within timeout. '
+          'Found texts: ${foundTexts.join(", ")}',
         );
       } catch (e) {
         fail(
-          'API call did not complete within timeout. Could not enumerate widgets: $e',
+          'API call did not complete within timeout. '
+          'Could not enumerate widgets: $e',
         );
       }
     }
@@ -70,7 +72,8 @@ void main() {
       fail('SDK returned an error');
     }
 
-    // If no error, verify that either actions are shown or a "No actions" message is displayed
+    // If no error, verify that either actions are shown or
+    // a "No actions" message is displayed
     // This makes the test resilient regardless of what the backend returns
     var actionsVisible = false;
 

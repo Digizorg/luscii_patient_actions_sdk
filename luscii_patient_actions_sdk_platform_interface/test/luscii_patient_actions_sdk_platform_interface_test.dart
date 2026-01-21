@@ -29,6 +29,20 @@ class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
+  Future<List<dynamic>> getSelfcareActions() {
+    return Future.value([
+      {
+        'icon': 'https://example.com/icon.png',
+        'completedAt': null,
+        'id': '3F2C7A8D-1B4E-3DF9-C248-95E0BCF741D6',
+        'launchableStatus': 'launchable',
+        'isLaunchable': true,
+        'name': 'Temperature',
+      },
+    ]);
+  }
+
+  @override
   Future<void> launchAction(String actionId) {
     return Future.value();
   }

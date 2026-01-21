@@ -26,15 +26,17 @@ class LusciiStreamHandler: NSObject, FlutterStreamHandler {
   }
   
   @objc func notificationReceived(_ notification: Notification) {
-    if let result = notification.userInfo?[ActionsNotificationUserInfoKey.actionFlowResult] as? ActionFlowResult {
-      // Prepare data to send to Flutter
-      let data: [String: Any] = [
-        "actionID": result.actionID.uuidString,
-        "status": result.status.toString()
-      ]
-      
-      // Send the data to Flutter
-      eventSink?(data)
+    if #available(iOS 17.0, *) {
+      if let result = notification.userInfo?[ActionsNotificationUserInfoKey.actionFlowResult] as? ActionFlowResult {
+        // Prepare data to send to Flutter
+        let data: [String: Any] = [
+          "actionID": result.actionID.uuidString,
+          "status": result.status.toString()
+        ]
+        
+        // Send the data to Flutter
+        eventSink?(data)
+      }
     }
   }
 }
