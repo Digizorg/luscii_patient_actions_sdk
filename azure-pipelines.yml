@@ -79,11 +79,20 @@ stages:
     steps:
       - checkout: self
 
+      - task: FlutterInstall@0
+        displayName: "Install Flutter"
+        inputs:
+          mode: "auto"
+          channel: "$(FLUTTER_CHANNEL)"
+          version: "custom"
+          customVersion: "$(FLUTTER_VERSION)"
+
       - task: Cache@2
         displayName: "Cache pub cache"
         inputs:
-          key: 'pub | "$(Agent.OS)" | $(EXAMPLE_DIR)/pubspec.lock'
+          key: 'pub | "$(Agent.OS)" | $(PKG_DIR)/pubspec.yaml | $(EXAMPLE_DIR)/pubspec.yaml'
           restoreKeys: |
+            pub | "$(Agent.OS)" | $(PKG_DIR)/pubspec.yaml
             pub | "$(Agent.OS)"
           path: "$(Pipeline.Workspace)/.pub-cache"
 
@@ -92,17 +101,12 @@ stages:
           echo "Using pub cache at $(Pipeline.Workspace)/.pub-cache"
           export PUB_CACHE="$(Pipeline.Workspace)/.pub-cache"
 
-          if ! command -v flutter >/dev/null 2>&1; then
-            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) on the Linux runner and ensure it's on PATH."
-            exit 1
-          fi
-
-          flutter --version
+          $(FlutterToolPath)/flutter --version
           cd "$(PKG_DIR)"
-          flutter pub get
-          dart format --output=none --set-exit-if-changed .
-          flutter analyze
-          flutter test --coverage
+          $(FlutterToolPath)/flutter pub get
+          $(FlutterToolPath)/dart format --output=none --set-exit-if-changed .
+          $(FlutterToolPath)/flutter analyze
+          $(FlutterToolPath)/flutter test --coverage
         displayName: "Format, analyze, test with coverage"
 
       - bash: |
@@ -156,16 +160,20 @@ stages:
     steps:
       - checkout: self
 
+      - task: FlutterInstall@0
+        displayName: "Install Flutter"
+        inputs:
+          mode: "auto"
+          channel: "$(FLUTTER_CHANNEL)"
+          version: "custom"
+          customVersion: "$(FLUTTER_VERSION)"
+
       - bash: |
           set -euo pipefail
-          if ! command -v flutter >/dev/null 2>&1; then
-            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) and ensure it's on PATH."
-            exit 1
-          fi
-          flutter --version
+          $(FlutterToolPath)/flutter --version
           cd "$(EXAMPLE_DIR)"
-          flutter pub global activate patrol_cli
-          flutter pub get
+          $(FlutterToolPath)/flutter pub global activate patrol_cli
+          $(FlutterToolPath)/flutter pub get
         displayName: "Install Patrol + deps"
 
       - bash: |
@@ -173,7 +181,7 @@ stages:
 
           # Expect Android SDK/emulator installed on the agent (recommended).
           export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
-          export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
+          export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$(FlutterToolPath):$PATH"
 
           if ! command -v sdkmanager >/dev/null 2>&1; then
             echo "sdkmanager not found. Install Android cmdline-tools on the Linux agent."
@@ -234,6 +242,14 @@ stages:
     steps:
       - checkout: self
 
+      - task: FlutterInstall@0
+        displayName: "Install Flutter"
+        inputs:
+          mode: "auto"
+          channel: "$(FLUTTER_CHANNEL)"
+          version: "custom"
+          customVersion: "$(FLUTTER_VERSION)"
+
       - bash: |
           set -euo pipefail
           # Update this path to the Xcode installed on your macOS agent, if needed:
@@ -243,15 +259,11 @@ stages:
 
       - bash: |
           set -euo pipefail
-          if ! command -v flutter >/dev/null 2>&1; then
-            echo "flutter not found on agent. Install Flutter $(FLUTTER_VERSION) and ensure it's on PATH."
-            exit 1
-          fi
-          flutter --version
+          $(FlutterToolPath)/flutter --version
 
           cd "$(EXAMPLE_DIR)"
-          flutter pub global activate patrol_cli
-          flutter pub get
+          $(FlutterToolPath)/flutter pub global activate patrol_cli
+          $(FlutterToolPath)/flutter pub get
         displayName: "Install Patrol + deps"
 
       - bash: |
@@ -272,6 +284,7 @@ stages:
 
       - bash: |
           set -euo pipefail
+          export PATH="$(FlutterToolPath):$PATH"
           cd "$(EXAMPLE_DIR)"
           patrol test patrol_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY" --device="$(SIM_UDID)"
         displayName: "Run iOS E2E"
