@@ -47,6 +47,8 @@ android {
     dependencies {
         if (project.hasProperty('lusciiUseAcceptanceSdk') && project.lusciiUseAcceptanceSdk == "true") {
             implementation("com.luscii:sdk-acceptance:0.8.2")
+        } else if (project.hasProperty('lusciiUseTestSdk') && project.lusciiUseTestSdk == "true") {
+            implementation("com.luscii:sdk-test:0.8.2")
         } else {
             implementation("com.luscii:sdk:0.8.2")
         }

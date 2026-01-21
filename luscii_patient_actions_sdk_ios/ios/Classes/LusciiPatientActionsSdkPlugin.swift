@@ -41,6 +41,8 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
          if let defaults = UserDefaults(suiteName: "com.luscii.Actions") {
              if environment == "acceptance" {
                  defaults.set("accept", forKey: "com.luscii.ActionsServerEnvironment")
+             } else if environment == "test" {
+                 defaults.set("test", forKey: "com.luscii.ActionsServerEnvironment")
              } else {
                  defaults.removeObject(forKey: "com.luscii.ActionsServerEnvironment")
              }

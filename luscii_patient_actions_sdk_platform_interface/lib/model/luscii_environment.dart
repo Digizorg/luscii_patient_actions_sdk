@@ -5,4 +5,7 @@ enum LusciiEnvironment {
 
   /// The acceptance environment.
   acceptance,
+
+  /// The test environment.
+  test,
 }
