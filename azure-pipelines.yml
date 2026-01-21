@@ -204,7 +204,7 @@ stages:
 
       - bash: |
           set -euo pipefail
-          export PATH="$(FlutterToolPath):$PATH"
+          export PATH="$HOME/.pub-cache/bin:$(FlutterToolPath):$PATH"
           cd "$(EXAMPLE_DIR)"
           patrol test patrol_test/app_test.dart --dart-define=LUSCII_API_KEY="$LUSCII_API_KEY" --device="$(SIM_UDID)"
         displayName: "Run iOS E2E"
