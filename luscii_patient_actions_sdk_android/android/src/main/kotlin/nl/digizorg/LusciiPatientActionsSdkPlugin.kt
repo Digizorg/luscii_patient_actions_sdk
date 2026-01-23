@@ -151,7 +151,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     return@launch
                 }
             }
-            "getSelfcareActions" -> {
+            "getSelfCareActions" -> {
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
                     return result.error(

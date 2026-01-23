@@ -66,9 +66,9 @@ getTodayActions() async {
 
 /// Get the actions for the authenticated user.
 Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
-getSelfcareActions() async {
+getSelfCareActions() async {
   try {
-    final actions = await _platform.getSelfcareActions();
+    final actions = await _platform.getSelfCareActions();
     return LusciiSdkSuccess(
       actions
           .map(

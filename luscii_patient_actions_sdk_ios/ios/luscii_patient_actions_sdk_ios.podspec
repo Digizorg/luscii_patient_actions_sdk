@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'luscii_patient_actions_sdk_ios'
-  s.version          = '0.8.0'
+  s.version          = '0.8.1'
   s.summary          = 'An iOS implementation of the luscii_patient_actions_sdk plugin.'
   s.description      = <<-DESC
   An iOS implementation of the luscii_patient_actions_sdk plugin.

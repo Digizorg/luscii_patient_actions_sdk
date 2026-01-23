@@ -96,8 +96,8 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       Task {
         do {
           let todayActions = try await luscii.todayActions()
-          let selfcareActions = try await luscii.selfCareActions()
-          let actions = selfcareActions + todayActions
+          let selfCareActions = try await luscii.selfCareActions()
+          let actions = selfCareActions + todayActions
           let matchingAction = actions.first(where: { $0.id.uuidString == actionId })
           guard let matchingAction else {
             let error = LusciiFlutterSdkError.invalidArguments("Action not found")
@@ -132,7 +132,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
           }
         }
       }
-    case "getSelfcareActions":
+    case "getSelfCareActions":
       Task {
         do {
           let actions = try await luscii.selfCareActions().map { $0.toMap() }

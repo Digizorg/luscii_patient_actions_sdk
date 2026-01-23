@@ -9,7 +9,10 @@ extension Action {
       "icon": icon?.absoluteString,  // Convert URL to string
       "completedAt": completedAt?.timeIntervalSince1970,  // Convert Date to timestamp
       "launchableStatus": serializeLaunchableStatus(),
-      "isLaunchable": isLaunchable
+      "isLaunchable": isLaunchable,
+      "isPlanned": isPlanned,
+      "isSelfCare": isSelfCare,
+      "isExtra": isExtra
     ]
   }
   

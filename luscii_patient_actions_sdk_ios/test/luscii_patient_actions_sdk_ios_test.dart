@@ -31,7 +31,7 @@ void main() {
                 return null;
               case 'getTodayActions':
                 return mockActions;
-              case 'getSelfcareActions':
+              case 'getSelfCareActions':
                 return mockActions;
               case 'launchAction':
                 return null;
@@ -103,29 +103,29 @@ void main() {
       );
     });
 
-    test('getSelfcareActions returns list of actions', () async {
-      final result = await lusciiPatientActionsSdk.getSelfcareActions();
+    test('getSelfCareActions returns list of actions', () async {
+      final result = await lusciiPatientActionsSdk.getSelfCareActions();
 
       expect(log, hasLength(1));
-      expect(log.first.method, 'getSelfcareActions');
+      expect(log.first.method, 'getSelfCareActions');
       expect(result, equals(mockActions));
     });
 
-    test('getSelfcareActions throws exception on invalid response', () async {
+    test('getSelfCareActions throws exception on invalid response', () async {
       // Override the mock to return null instead of a list
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
             methodCall,
           ) async {
             log.add(methodCall);
-            if (methodCall.method == 'getSelfcareActions') {
+            if (methodCall.method == 'getSelfCareActions') {
               return null;
             }
             return null;
           });
 
       expect(
-        () => lusciiPatientActionsSdk.getSelfcareActions(),
+        () => lusciiPatientActionsSdk.getSelfCareActions(),
         throwsA(isA<LusciiSdkException>()),
       );
     });
