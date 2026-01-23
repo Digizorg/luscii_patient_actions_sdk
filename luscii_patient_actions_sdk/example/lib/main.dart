@@ -125,15 +125,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> getSelfcareActions() async {
+  Future<void> getSelfCareActions() async {
     // Reset error state before making the request
     setState(() {
       errorMessage = null;
     });
 
     try {
-      debugPrint('Starting getSelfcareActions API call...');
-      final result = await luscii_sdk.getSelfcareActions();
+      debugPrint('Starting getSelfCareActions API call...');
+      final result = await luscii_sdk.getSelfCareActions();
       switch (result) {
         case LusciiSdkSuccess(value: final actions):
           debugPrint('Successfully received ${actions.length} actions');
@@ -167,8 +167,8 @@ class _HomePageState extends State<HomePage> {
             child: const Text('Get today actions'),
           ),
           TextButton(
-            onPressed: getSelfcareActions,
-            child: const Text('Get selfcare actions'),
+            onPressed: getSelfCareActions,
+            child: const Text('Get selfCare actions'),
           ),
           if (errorMessage != null)
             Padding(

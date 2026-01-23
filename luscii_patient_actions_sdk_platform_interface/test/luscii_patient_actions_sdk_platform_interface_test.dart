@@ -32,7 +32,7 @@ class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getSelfcareActions() {
+  Future<List<dynamic>> getSelfCareActions() {
     return Future.value([
       {
         'icon': 'https://example.com/icon.png',

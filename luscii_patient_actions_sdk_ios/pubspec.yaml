@@ -1,6 +1,6 @@
 name: luscii_patient_actions_sdk_ios
 description: iOS implementation of the luscii_patient_actions_sdk plugin
-version: 0.8.0+2
+version: 0.8.1+1
 repository: https://github.com/Digizorg/luscii_patient_actions_sdk
 homepage: https://github.com/Digizorg/luscii_patient_actions_sdk
 
@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  luscii_patient_actions_sdk_platform_interface: ^0.8.0
+  luscii_patient_actions_sdk_platform_interface: ^0.8.1
 
 dev_dependencies:
   flutter_test:

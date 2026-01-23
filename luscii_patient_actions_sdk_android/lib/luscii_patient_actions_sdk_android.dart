@@ -55,9 +55,9 @@ class LusciiPatientActionsSdkAndroid extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
-  Future<List<dynamic>> getSelfcareActions() async {
+  Future<List<dynamic>> getSelfCareActions() async {
     final actions = await methodChannel.invokeMethod<List<dynamic>>(
-      'getSelfcareActions',
+      'getSelfCareActions',
     );
 
     if (actions is! List) {
