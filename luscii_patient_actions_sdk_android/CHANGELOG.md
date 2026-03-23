@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0+1] - 2026-03-23
+
+### Added
+- Added caching layer, improving the speed of `launchAction` by keeping action objects in memory.
+
 ## [0.8.1+1] - 2026-01-23
 
 ### Fixed
