@@ -19,7 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  luscii_patient_actions_sdk_platform_interface: ^0.8.1
+  luscii_patient_actions_sdk_platform_interface: ^0.9.0
 
 dev_dependencies:
   flutter_test:
