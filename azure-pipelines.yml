@@ -23,7 +23,7 @@ variables:
   - group: "Mobile Luscii Patient SDK"
 
   - name: FLUTTER_VERSION
-    value: "3.38.7"
+    value: "3.41.5"
   - name: FLUTTER_CHANNEL
     value: "stable"
   - name: PKG_DIR
