@@ -5,6 +5,9 @@ import UIKit
 public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
   private var _luscii: Any?
   
+  private var fetchedTodaysTasks: [Action]?
+  private var fetchedSelfCareTasks: [Action]?
+  
   /// Only make Luscii available when it's iOS 17 or higher
   @available(iOS 17.0, *)
   private var luscii: Luscii {
@@ -78,8 +81,10 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
     case "getTodayActions":
       Task {
         do {
-          let actions = try await luscii.todayActions().map { $0.toMap() }
-          return result(actions)
+          let actions = try await luscii.todayActions()
+          fetchedTodaysTasks = actions
+          let convertedActions = actions.map { $0.toMap() }
+          return result(convertedActions)
         } catch {
           if error is LusciiAuthenticationError {
             return handleAuthenticationError(error: error, result: result)
@@ -95,13 +100,19 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       }
       Task {
         do {
-          let todayActions = try await luscii.todayActions()
-          let selfCareActions = try await luscii.selfCareActions()
-          let actions = selfCareActions + todayActions
-          let matchingAction = actions.first(where: { $0.id.uuidString == actionId })
-          guard let matchingAction else {
-            let error = LusciiFlutterSdkError.invalidArguments("Action not found")
-            return result(error.flutterError)
+          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? [])
+          let matchingAction: Action
+          if let match = existingActions.first(where: { $0.id.uuidString == actionId }) {
+            matchingAction = match
+          } else {
+            let todayActions = try await luscii.todayActions()
+            let selfCareActions = try await luscii.selfCareActions()
+            let fetchedActions = selfCareActions + todayActions
+            guard let match = fetchedActions.first(where: { $0.id.uuidString == actionId }) else {
+              let error = LusciiFlutterSdkError.invalidArguments("Action not found")
+              return result(error.flutterError)
+            }
+            matchingAction = match
           }
           let rootViewController = await MainActor.run {
               UIApplication.shared.connectedScenes
@@ -113,12 +124,12 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
             let error = LusciiFlutterSdkError.invalidArguments("No key window found")
             return result(error.flutterError)
           }
-          DispatchQueue.main.async {
+          await MainActor.run {
             do {
-              try self.luscii.launchActionFlow(for: matchingAction, on: rootViewController)
+              try luscii.launchActionFlow(for: matchingAction, on: rootViewController)
             } catch {
               if error is LusciiAuthenticationError {
-                return self.handleAuthenticationError(error: error, result: result)
+                return handleAuthenticationError(error: error, result: result)
               } else {
                 return result(LusciiFlutterSdkError.unknown.flutterError)
               }
@@ -135,8 +146,10 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
     case "getSelfCareActions":
       Task {
         do {
-          let actions = try await luscii.selfCareActions().map { $0.toMap() }
-          return result(actions)
+          let actions = try await luscii.selfCareActions()
+          fetchedSelfCareTasks = actions
+          let convertedActions = actions.map { $0.toMap() }
+          return result(convertedActions)
         } catch {
           if error is LusciiAuthenticationError {
             return handleAuthenticationError(error: error, result: result)
