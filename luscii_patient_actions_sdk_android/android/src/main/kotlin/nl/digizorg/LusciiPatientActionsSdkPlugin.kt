@@ -42,6 +42,9 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     // Store the action temporarily while waiting for disclaimer result
     private var pendingAction: Action? = null
 
+    private var fetchedTodaysTasks: List<Action>? = null
+    private var fetchedSelfCareTasks: List<Action>? = null
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "luscii_patient_actions_sdk_android")
         channel.setMethodCallHandler(this)
@@ -130,7 +133,9 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 }
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val actions = luscii!!.getTodayActions().map { it.toMap() }
+                        val rawActions = luscii!!.getTodayActions()
+                        fetchedTodaysTasks = rawActions
+                        val actions = rawActions.map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
                         result.error(
@@ -162,7 +167,9 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 }
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val actions = luscii!!.getSelfCareActions().map { it.toMap() }
+                        val rawActions = luscii!!.getSelfCareActions()
+                        fetchedSelfCareTasks = rawActions
+                        val actions = rawActions.map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
                         result.error(
@@ -216,10 +223,13 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val todayActions = luscii!!.getTodayActions()
-                        val selfCareActions = luscii!!.getSelfCareActions()
-                        val actions = todayActions + selfCareActions
-                        val action = actions.firstOrNull { it.id.toString() == actionId }
+                        val existingActions = (fetchedTodaysTasks ?: emptyList()) + (fetchedSelfCareTasks ?: emptyList())
+                        val action = existingActions.firstOrNull { it.id.toString() == actionId }
+                            ?: run {
+                                val todayActions = luscii!!.getTodayActions()
+                                val selfCareActions = luscii!!.getSelfCareActions()
+                                (todayActions + selfCareActions).firstOrNull { it.id.toString() == actionId }
+                            }
                         if (action == null) {
                             return@launch result.error(
                                 LusciiFlutterSdkError.INVALID_ARGUMENTS.code,
