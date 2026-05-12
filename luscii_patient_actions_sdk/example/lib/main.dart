@@ -163,8 +163,8 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      debugPrint('Starting getSelfCareActions API call...');
-      final result = await luscii_sdk.getSelfCareActions();
+      debugPrint('Starting getExtraActions API call...');
+      final result = await luscii_sdk.getExtraActions();
       switch (result) {
         case LusciiSdkSuccess(value: final actions):
           debugPrint('Successfully received ${actions.length} actions');
