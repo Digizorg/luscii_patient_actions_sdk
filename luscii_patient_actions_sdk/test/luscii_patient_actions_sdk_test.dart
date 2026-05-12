@@ -215,6 +215,97 @@ void main() {
       expect(failure.exception.reason, 'Unauthorized');
     });
 
+    test('getExtraActions - success', () async {
+      when(
+        () => lusciiPatientActionsSdkPlatform.getExtraActions(),
+      ).thenAnswer((_) => Future.value(mockActions));
+
+      final result = await getExtraActions();
+
+      verify(() => lusciiPatientActionsSdkPlatform.getExtraActions()).called(1);
+
+      expect(
+        result,
+        isA<LusciiSdkSuccess<List<LusciiSdkAction>, LusciiSdkError>>(),
+      );
+      final success =
+          result as LusciiSdkSuccess<List<LusciiSdkAction>, LusciiSdkError>;
+      expect(success.value, isA<List<LusciiSdkAction>>());
+      expect(success.value.length, 2);
+
+      // Verify first action
+      expect(success.value[0].id, 'action1');
+      expect(success.value[0].name, 'Action 1');
+      expect(success.value[0].icon, 'icon1');
+      expect(success.value[0].isLaunchable, true);
+      expect(
+        success.value[0].launchableStatus,
+        isA<LaunchableSdkStatusLaunchable>(),
+      );
+      expect(success.value[0].completedAt, isNotNull);
+
+      // Verify second action
+      expect(success.value[1].id, 'action2');
+      expect(success.value[1].name, 'Action 2');
+      expect(success.value[1].icon, 'icon2');
+      expect(success.value[1].isLaunchable, false);
+      expect(
+        success.value[1].launchableStatus,
+        isA<LaunchableSdkStatusCompleted>(),
+      );
+      expect(success.value[1].completedAt, isNull);
+    });
+
+    test('getExtraActions - LusciiSdkException', () async {
+      when(() => lusciiPatientActionsSdkPlatform.getExtraActions()).thenThrow(
+        LusciiSdkException(reason: 'Invalid response from native platform'),
+      );
+
+      final result = await getExtraActions();
+
+      expect(
+        result,
+        isA<LusciiSdkFailure<List<LusciiSdkAction>, LusciiSdkError>>(),
+      );
+      final failure =
+          result as LusciiSdkFailure<List<LusciiSdkAction>, LusciiSdkError>;
+      expect(failure.exception.type, LusciiSdkErrorType.invalidResponse);
+      expect(failure.exception.reason, 'Invalid response from native platform');
+    });
+
+    test('getExtraActions - platform exception', () async {
+      when(
+        () => lusciiPatientActionsSdkPlatform.getExtraActions(),
+      ).thenThrow(PlatformException(code: '3', message: 'Unauthorized'));
+
+      final result = await getExtraActions();
+
+      expect(
+        result,
+        isA<LusciiSdkFailure<List<LusciiSdkAction>, LusciiSdkError>>(),
+      );
+      final failure =
+          result as LusciiSdkFailure<List<LusciiSdkAction>, LusciiSdkError>;
+      expect(failure.exception.type, LusciiSdkErrorType.unauthorized);
+      expect(failure.exception.reason, 'Unauthorized');
+    });
+
+    test('getExtraActions - empty list', () async {
+      when(
+        () => lusciiPatientActionsSdkPlatform.getExtraActions(),
+      ).thenAnswer((_) => Future.value([]));
+
+      final result = await getExtraActions();
+
+      expect(
+        result,
+        isA<LusciiSdkSuccess<List<LusciiSdkAction>, LusciiSdkError>>(),
+      );
+      final success =
+          result as LusciiSdkSuccess<List<LusciiSdkAction>, LusciiSdkError>;
+      expect(success.value, isEmpty);
+    });
+
     test('launchAction - success', () async {
       const actionId = 'action1';
 
