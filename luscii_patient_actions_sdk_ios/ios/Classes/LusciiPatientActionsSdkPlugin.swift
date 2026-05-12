@@ -101,7 +101,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       }
       Task {
         do {
-          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? []) + (fetchedSelfCareTasks ?? [])
+          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? []) + (fetchedExtraTasks ?? [])
           let matchingAction: Action
           if let match = existingActions.first(where: { $0.id.uuidString == actionId }) {
             matchingAction = match
@@ -163,8 +163,8 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
     case "getExtraActions":
       Task {
         do {
-            let actions = try await luscii.extraActions()
-          fetchedSelfCareTasks = actions
+          let actions = try await luscii.extraActions()
+          fetchedExtraTasks = actions
           let convertedActions = actions.map { $0.toMap() }
           return result(convertedActions)
         } catch {
