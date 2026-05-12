@@ -156,6 +156,37 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getExtraActions() async {
+    // Reset error state before making the request
+    setState(() {
+      errorMessage = null;
+    });
+
+    try {
+      debugPrint('Starting getSelfCareActions API call...');
+      final result = await luscii_sdk.getSelfCareActions();
+      switch (result) {
+        case LusciiSdkSuccess(value: final actions):
+          debugPrint('Successfully received ${actions.length} actions');
+          setState(() {
+            this.actions = actions;
+            errorMessage = null;
+          });
+        case LusciiSdkFailure(exception: final exception):
+          debugPrint('Failed to get actions');
+          debugPrint(exception.reason);
+          setState(() {
+            errorMessage = 'Error: ${exception.reason}';
+          });
+      }
+    } catch (e) {
+      debugPrint('Unexpected error in getActions: $e');
+      setState(() {
+        errorMessage = 'Error: Unexpected error occurred - $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,6 +200,10 @@ class _HomePageState extends State<HomePage> {
           TextButton(
             onPressed: getSelfCareActions,
             child: const Text('Get selfCare actions'),
+          ),
+          TextButton(
+            onPressed: getExtraActions,
+            child: const Text('Get extra actions'),
           ),
           if (errorMessage != null)
             Padding(

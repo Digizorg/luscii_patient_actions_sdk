@@ -44,6 +44,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     private var fetchedTodaysTasks: List<Action>? = null
     private var fetchedSelfCareTasks: List<Action>? = null
+    private var fetchedExtraTasks: List<Action>? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "luscii_patient_actions_sdk_android")
@@ -190,6 +191,39 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     return@launch
                 }
             }
+            "getExtraActions" -> {
+            // Check if the luscii instance is initialized
+            if (luscii == null) {
+                return result.error(
+                    LusciiFlutterSdkError.NOT_INITIALIZED.code,
+                    LusciiFlutterSdkError.NOT_INITIALIZED.message,
+                    null
+                )
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val rawActions = luscii!!.getExtraActions()
+                    fetchedExtraTasks = rawActions
+                    val actions = rawActions.map { it.toMap() }
+                    result.success(actions)
+                } catch (e: UnauthenticatedException) {
+                    result.error(
+                        LusciiFlutterSdkError.UNAUTHORIZED.code,
+                        LusciiFlutterSdkError.UNAUTHORIZED.message,
+                        e.message
+                    )
+                    return@launch
+                } catch (e: Exception) {
+                    result.error(
+                        LusciiFlutterSdkError.UNKNOWN.code,
+                        LusciiFlutterSdkError.UNKNOWN.message,
+                        e.message
+                    )
+                    return@launch
+                }
+                return@launch
+            }
+        }
             "launchAction" -> {
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
@@ -223,12 +257,13 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             )
                         }
 
-                        val existingActions = (fetchedTodaysTasks ?: emptyList()) + (fetchedSelfCareTasks ?: emptyList())
+                        val existingActions = (fetchedTodaysTasks ?: emptyList()) + (fetchedSelfCareTasks ?: emptyList() ) + (fetchedExtraTasks ?: emptyList())
                         val action = existingActions.firstOrNull { it.id.toString() == actionId }
                             ?: run {
                                 val todayActions = luscii!!.getTodayActions()
                                 val selfCareActions = luscii!!.getSelfCareActions()
-                                (todayActions + selfCareActions).firstOrNull { it.id.toString() == actionId }
+                                val extraActions = luscii!!.getExtraActions()
+                                (todayActions + selfCareActions + extraActions).firstOrNull { it.id.toString() == actionId }
                             }
                         if (action == null) {
                             return@launch result.error(

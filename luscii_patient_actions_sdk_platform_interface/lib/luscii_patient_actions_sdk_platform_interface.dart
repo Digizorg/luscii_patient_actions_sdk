@@ -50,6 +50,9 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
   /// Get selfCare actions for the authenticated user.
   Future<List<dynamic>> getSelfCareActions();
 
+  /// Get selfCare actions for the authenticated user which they can do extra.
+  Future<List<dynamic>> getExtraActions();
+
   /// Launch the action with the given ID.
   Future<void> launchAction(String actionId);
 
