@@ -161,6 +161,7 @@ This package is used in production and should be stable, but still expect freque
 | `actionFlowStream()`   | ✅           | ✅ 
 | `startSelfCareActivity()`   | ❌           | ❌ 
 | `getSelfCareActions()`   | ✅           | ✅              |
+| `getExtraActions()`   | ✅           | ✅              |
 
 
 ### Integration tests 🧪
