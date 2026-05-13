@@ -33,6 +33,8 @@ void main() {
                 return mockActions;
               case 'getSelfCareActions':
                 return mockActions;
+              case 'getExtraActions':
+                return mockActions;
               case 'launchAction':
                 return null;
               default:
@@ -126,6 +128,33 @@ void main() {
 
       expect(
         () => lusciiPatientActionsSdk.getSelfCareActions(),
+        throwsA(isA<LusciiSdkException>()),
+      );
+    });
+
+    test('getExtraActions returns list of actions', () async {
+      final result = await lusciiPatientActionsSdk.getExtraActions();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'getExtraActions');
+      expect(result, equals(mockActions));
+    });
+
+    test('getExtraActions throws exception on invalid response', () async {
+      // Override the mock to return null instead of a list
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(lusciiPatientActionsSdk.methodChannel, (
+            methodCall,
+          ) async {
+            log.add(methodCall);
+            if (methodCall.method == 'getExtraActions') {
+              return null;
+            }
+            return null;
+          });
+
+      expect(
+        () => lusciiPatientActionsSdk.getExtraActions(),
         throwsA(isA<LusciiSdkException>()),
       );
     });
