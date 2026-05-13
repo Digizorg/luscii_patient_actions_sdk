@@ -94,8 +94,22 @@ void main() {
         await lusciiPatientActionsSdkPlatform.authenticate('apiKey');
       });
 
-      test('should get the actions for the authenticated user', () async {
+      test('should get the today actions for the authenticated user', () async {
         final actions = await lusciiPatientActionsSdkPlatform.getTodayActions();
+        expect(actions, isNotEmpty);
+      });
+
+      test(
+        'should get the selfCare actions for the authenticated user',
+        () async {
+          final actions = await lusciiPatientActionsSdkPlatform
+              .getSelfCareActions();
+          expect(actions, isNotEmpty);
+        },
+      );
+
+      test('should get the extra actions for the authenticated user', () async {
+        final actions = await lusciiPatientActionsSdkPlatform.getExtraActions();
         expect(actions, isNotEmpty);
       });
 
