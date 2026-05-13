@@ -191,10 +191,7 @@ void main() {
             .setMockMethodCallHandler(methodChannel.methodChannel, (
               methodCall,
             ) async {
-              throw PlatformException(
-                code: 'ERROR',
-                message: 'launch failed',
-              );
+              throw PlatformException(code: 'ERROR', message: 'launch failed');
             });
 
         expect(
