@@ -45,11 +45,11 @@ android {
     }
 
     dependencies {
-//       if (project.hasProperty('lusciiUseAcceptanceSdk') && project.lusciiUseAcceptanceSdk == "true") {
-        implementation("com.luscii:sdk-acceptance:0.10.0")
-//       } else {
-//           implementation("com.luscii:sdk:0.8.2")
-//       }
+        if (project.hasProperty('lusciiUseAcceptanceSdk') && project.lusciiUseAcceptanceSdk == "true") {
+            implementation("com.luscii:sdk-acceptance:0.10.0")
+        } else {
+            implementation("com.luscii:sdk:0.10.0")
+        }
         
         implementation "com.google.dagger:hilt-android:2.58"
         implementation "androidx.fragment:fragment-ktx:1.8.6"

@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Bumped federated package dependencies to `^0.10.0`.
-- Updated `authenticate` to call the platform layer with a fixed API key value.
 
 ## [0.9.0+1] - 2026-03-23
 

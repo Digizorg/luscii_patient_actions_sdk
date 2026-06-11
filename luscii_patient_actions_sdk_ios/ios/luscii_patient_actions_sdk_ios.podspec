@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
 
   # Specify the version of Actions you want to include
-  actions_version = '2.2.0-rc.2'
+  actions_version = '2.2.0'
 
   # Download and unzip the frameworks during the prepare phase
   s.prepare_command = <<-CMD
