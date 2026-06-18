@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.10.0+1] - 2026-05-12
 
 ### Changed
-- Switched Android SDK dependency to `com.luscii:sdk-acceptance:0.10.0`.
+- Updated com.luscii:sdk to 0.10.0
 - Removed conditional SDK selection based on Gradle properties.
 - Updated Hilt from `2.57.2` to `2.58`.
 
