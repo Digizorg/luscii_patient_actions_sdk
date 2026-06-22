@@ -59,6 +59,18 @@ class MethodChannelLusciiPatientActionsSdk
   }
 
   @override
+  Future<List<dynamic>> getExtraActions() async {
+    final actions = await methodChannel.invokeMethod<List<dynamic>>(
+      'getSelfCareActions',
+    );
+
+    if (actions is! List) {
+      throw LusciiSdkException(reason: 'Invalid response from native platform');
+    }
+    return actions;
+  }
+
+  @override
   Future<void> launchAction(String actionId) async {
     await methodChannel.invokeMethod<Map<String, dynamic>>(
       'launchAction',

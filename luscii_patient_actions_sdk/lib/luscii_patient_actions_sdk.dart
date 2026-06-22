@@ -89,6 +89,31 @@ getSelfCareActions() async {
   }
 }
 
+/// Get selfCare actions for the authenticated user which they can do extra.
+Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
+getExtraActions() async {
+  try {
+    final actions = await _platform.getExtraActions();
+    return LusciiSdkSuccess(
+      actions
+          .map(
+            (action) =>
+                LusciiSdkAction.fromMap(action as Map<dynamic, dynamic>),
+          )
+          .toList(growable: false),
+    );
+  } on LusciiSdkException catch (_) {
+    return LusciiSdkFailure(
+      LusciiSdkError(
+        LusciiSdkErrorType.invalidResponse,
+        'Invalid response from native platform',
+      ),
+    );
+  } on PlatformException catch (e) {
+    return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
+  }
+}
+
 /// Launch the action with the given ID.
 Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> launchAction(
   String actionId,

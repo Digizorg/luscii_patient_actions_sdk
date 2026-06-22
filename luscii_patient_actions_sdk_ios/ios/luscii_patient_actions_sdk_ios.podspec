@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'luscii_patient_actions_sdk_ios'
-  s.version          = '0.9.0'
+  s.version          = '0.10.0'
   s.summary          = 'An iOS implementation of the luscii_patient_actions_sdk plugin.'
   s.description      = <<-DESC
   An iOS implementation of the luscii_patient_actions_sdk plugin.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
 
   # Specify the version of Actions you want to include
-  actions_version = '2.1.0'
+  actions_version = '2.2.0'
 
   # Download and unzip the frameworks during the prepare phase
   s.prepare_command = <<-CMD

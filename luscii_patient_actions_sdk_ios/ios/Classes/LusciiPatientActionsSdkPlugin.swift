@@ -7,6 +7,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
   
   private var fetchedTodaysTasks: [Action]?
   private var fetchedSelfCareTasks: [Action]?
+  private var fetchedExtraTasks: [Action]?
   
   /// Only make Luscii available when it's iOS 17 or higher
   @available(iOS 17.0, *)
@@ -100,14 +101,15 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       }
       Task {
         do {
-          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? [])
+          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? []) + (fetchedExtraTasks ?? [])
           let matchingAction: Action
           if let match = existingActions.first(where: { $0.id.uuidString == actionId }) {
             matchingAction = match
           } else {
             let todayActions = try await luscii.todayActions()
             let selfCareActions = try await luscii.selfCareActions()
-            let fetchedActions = selfCareActions + todayActions
+            let extraActions = try await luscii.extraActions()
+            let fetchedActions = selfCareActions + todayActions + extraActions
             guard let match = fetchedActions.first(where: { $0.id.uuidString == actionId }) else {
               let error = LusciiFlutterSdkError.invalidArguments("Action not found")
               return result(error.flutterError)
@@ -148,6 +150,21 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
         do {
           let actions = try await luscii.selfCareActions()
           fetchedSelfCareTasks = actions
+          let convertedActions = actions.map { $0.toMap() }
+          return result(convertedActions)
+        } catch {
+          if error is LusciiAuthenticationError {
+            return handleAuthenticationError(error: error, result: result)
+          } else {
+            return result(LusciiFlutterSdkError.unknown.flutterError)
+          }
+        }
+      }
+    case "getExtraActions":
+      Task {
+        do {
+          let actions = try await luscii.extraActions()
+          fetchedExtraTasks = actions
           let convertedActions = actions.map { $0.toMap() }
           return result(convertedActions)
         } catch {
