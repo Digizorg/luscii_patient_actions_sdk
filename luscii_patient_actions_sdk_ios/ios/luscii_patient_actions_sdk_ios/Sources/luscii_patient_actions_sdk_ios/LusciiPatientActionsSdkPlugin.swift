@@ -72,6 +72,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
           // Return void/nil if the call succeeds
           return result(nil)
         } catch {
+          print(error)
           if error is LusciiAuthenticationError {
             return handleAuthenticationError(error: error, result: result)
           } else {

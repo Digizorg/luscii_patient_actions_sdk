@@ -53,6 +53,13 @@ ios/**/.symlinks/
 ios/**/profile
 ios/**/xcuserdata
 
+# Swift Package Manager
+.build/
+.swiftpm/
+ios/**/.build/
+ios/**/.swiftpm/
+ios/**/Package.resolved
+
 # Generated files
 *.g.dart
 *.freezed.dart
