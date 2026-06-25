@@ -12,7 +12,8 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Digizorg' => 'info@digizorg.app' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  # Sources live under the Swift Package layout so SwiftPM and CocoaPods can share them.
+  s.source_files     = 'luscii_patient_actions_sdk_ios/Sources/luscii_patient_actions_sdk_ios/**/*.swift'
   s.dependency       'Flutter'
   s.platform         = :ios, '15.5'
   s.swift_version    = '5.0'

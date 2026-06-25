@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "actions-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Luscii/actions-sdk-ios.git",
+      "state" : {
+        "revision" : "1bd24d6362290283cacef637070573c9d8ce2628",
+        "version" : "2.2.0"
+      }
+    }
+  ],
+  "version" : 2
+}
