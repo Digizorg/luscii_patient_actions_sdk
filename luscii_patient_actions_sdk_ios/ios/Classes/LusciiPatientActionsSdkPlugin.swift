@@ -48,7 +48,7 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
              } else if environment == "test" {
                  defaults.set("test", forKey: "com.luscii.ActionsServerEnvironment")
              } else {
-                 defaults.removeObject(forKey: "com.luscii.ActionsServerEnvironment")
+                 defaults.set("production", forKey: "com.luscii.ActionsServerEnvironment")
              }
              // Force recreation of Luscii instance to pick up new environment settings
              _luscii = nil
