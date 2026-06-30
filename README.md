@@ -149,6 +149,15 @@ final result = await luscii_sdk.initialize(
 );
 ```
 
+As of `0.10.1+1`, an iOS-specific bug was fixed by explicitly setting the production environment in the plugin.
+You can also pass production explicitly:
+
+```dart
+final result = await luscii_sdk.initialize(
+  iOSEnvironment: LusciiEnvironment.production,
+);
+```
+
 ## Support
 
 This package is used in production and should be stable, but still expect frequent big API call changes
