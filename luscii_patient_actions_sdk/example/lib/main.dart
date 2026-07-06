@@ -125,10 +125,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     debugPrint('Initializing SDK...');
-    final result = await luscii_sdk.initialize(
-      androidDynamicTheming: true,
-      iOSEnvironment: luscii_sdk.LusciiEnvironment.production,
-    );
+    final result = await luscii_sdk.initialize(androidDynamicTheming: true);
 
     switch (result) {
       case LusciiSdkSuccess():
