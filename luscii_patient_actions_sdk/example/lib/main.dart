@@ -64,10 +64,11 @@ class _HomePageState extends State<HomePage> {
     try {
       await operation();
     } finally {
-      if (!mounted) return;
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
