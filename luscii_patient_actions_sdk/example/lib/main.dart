@@ -28,33 +28,8 @@ String get apiKey {
   return '<TEST_API_KEY>';
 }
 
-Future<void> initApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  debugPrint('Initializing SDK...');
-  final initialize = await luscii_sdk.initialize(
-    androidDynamicTheming: true,
-    // ignore: avoid_redundant_argument_values
-    iOSEnvironment: luscii_sdk.LusciiEnvironment.production,
-  );
-  if (initialize is LusciiSdkSuccess) {
-    debugPrint('SDK initialized successfully');
-  } else if (initialize is LusciiSdkFailure) {
-    debugPrint('SDK initialization failed');
-    debugPrint('Error: $initialize');
-  }
-
-  debugPrint('Authenticating with API key: ${apiKey.substring(0, 4)}...');
-  final lusciiPatientActionsSdk = await luscii_sdk.authenticate(apiKey);
-  if (lusciiPatientActionsSdk is LusciiSdkSuccess) {
-    debugPrint('Authenticated successfully');
-  } else if (lusciiPatientActionsSdk is LusciiSdkFailure) {
-    debugPrint('Authentication failed');
-    debugPrint('Error: $lusciiPatientActionsSdk');
-  }
-}
-
 Future<void> main() async {
-  await initApp();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -77,6 +52,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<LusciiSdkAction>? actions;
   String? errorMessage;
+  bool isLoading = false;
+
+  Future<void> runWithLoading(Future<void> Function() operation) async {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await operation();
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -122,6 +115,49 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         errorMessage = 'Error: Unexpected error occurred - $e';
       });
+    }
+  }
+
+  Future<void> initializeSdk() async {
+    setState(() {
+      errorMessage = null;
+    });
+
+    debugPrint('Initializing SDK...');
+    final result = await luscii_sdk.initialize(
+      androidDynamicTheming: true,
+      iOSEnvironment: luscii_sdk.LusciiEnvironment.production,
+    );
+
+    switch (result) {
+      case LusciiSdkSuccess():
+        debugPrint('SDK initialized successfully');
+      case LusciiSdkFailure(exception: final exception):
+        debugPrint('SDK initialization failed');
+        debugPrint('Error: $exception');
+        setState(() {
+          errorMessage = 'Error: ${exception.reason}';
+        });
+    }
+  }
+
+  Future<void> authenticateSdk() async {
+    setState(() {
+      errorMessage = null;
+    });
+
+    debugPrint('Authenticating with API key: ${apiKey.substring(0, 4)}...');
+    final result = await luscii_sdk.authenticate(apiKey);
+
+    switch (result) {
+      case LusciiSdkSuccess():
+        debugPrint('Authenticated successfully');
+      case LusciiSdkFailure(exception: final exception):
+        debugPrint('Authentication failed');
+        debugPrint('Error: $exception');
+        setState(() {
+          errorMessage = 'Error: ${exception.reason}';
+        });
     }
   }
 
@@ -193,16 +229,27 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: const Text('LusciiPatientActionsSdk Example')),
       body: Column(
         children: [
+          if (isLoading) const LinearProgressIndicator(),
           TextButton(
-            onPressed: getTodayActions,
+            onPressed: isLoading ? null : () => runWithLoading(initializeSdk),
+            child: const Text('Initialize SDK'),
+          ),
+          TextButton(
+            onPressed: isLoading ? null : () => runWithLoading(authenticateSdk),
+            child: const Text('Authenticate SDK'),
+          ),
+          TextButton(
+            onPressed: isLoading ? null : () => runWithLoading(getTodayActions),
             child: const Text('Get today actions'),
           ),
           TextButton(
-            onPressed: getSelfCareActions,
+            onPressed: isLoading
+                ? null
+                : () => runWithLoading(getSelfCareActions),
             child: const Text('Get selfCare actions'),
           ),
           TextButton(
-            onPressed: getExtraActions,
+            onPressed: isLoading ? null : () => runWithLoading(getExtraActions),
             child: const Text('Get extra actions'),
           ),
           if (errorMessage != null)

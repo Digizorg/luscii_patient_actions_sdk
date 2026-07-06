@@ -6,7 +6,6 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest('Get actions flow test', ($) async {
     // Enable verbose logging for tests
-    await app.initApp();
     await $.pumpWidgetAndSettle(const app.MyApp());
 
     // Verify the app started correctly
