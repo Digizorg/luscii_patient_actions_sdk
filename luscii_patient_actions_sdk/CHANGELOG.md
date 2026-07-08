@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.2+1] - 2026-07-06
+
+### Changed
+- Bumped federated package dependencies to `^0.10.2`.
+- Bumped package version to `0.10.2+1`.
+
+## [0.10.1+1] - 2026-06-29
+
+### Fixed
+- iOS: fixed a production-environment issue by setting the production environment explicitly.
+
+### Changed
+- Bumped federated package dependencies to `^0.10.1`.
+
 ## [0.10.0+1] - 2026-05-12
 
 ### Changed

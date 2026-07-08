@@ -149,9 +149,26 @@ final result = await luscii_sdk.initialize(
 );
 ```
 
+As of `0.10.1+1`, an iOS-specific bug was fixed by explicitly setting the production environment in the plugin.
+You can also pass production explicitly:
+
+```dart
+final result = await luscii_sdk.initialize(
+  iOSEnvironment: LusciiEnvironment.production,
+);
+```
+
 ## Support
 
 This package is used in production and should be stable, but still expect frequent big API call changes
+
+## Authentication lifecycle (Android)
+
+As of `0.10.2+1`, Android authentication is stateful inside the plugin:
+
+- `initialize(...)` is idempotent. If the SDK instance already exists, the plugin returns success without creating a new instance.
+- After a successful `authenticate(apiKey)`, additional `authenticate` calls return success immediately.
+- The plugin does not call the native Luscii SDK `authenticate` again while it is already authenticated.
 
 | Function               | iOS Support | Android Support |
 |------------------------|-------------|-----------------|
