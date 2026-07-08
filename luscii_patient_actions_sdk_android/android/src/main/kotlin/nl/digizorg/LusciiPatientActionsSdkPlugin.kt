@@ -42,6 +42,8 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     // Store the action temporarily while waiting for disclaimer result
     private var pendingAction: Action? = null
 
+    private var isAuthenticated: Boolean = false
+
     private var fetchedTodaysTasks: List<Action>? = null
     private var fetchedSelfCareTasks: List<Action>? = null
     private var fetchedExtraTasks: List<Action>? = null
@@ -60,16 +62,24 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "initialize" -> {
+                if (luscii != null) {
+                    return result.success(null)
+                }
+
                 val useDynamicColors = call.argument<Boolean>("useDynamicColors") ?: false
 
                 luscii = Luscii {
                     applicationContext = activity?.applicationContext
                     this.useDynamicColors = useDynamicColors
                 }
+                isAuthenticated = false
                 registerLauncherIfReady()
                 result.success(null)
             }
             "authenticate" -> {
+                if (isAuthenticated) {
+                    return result.success(null)
+                }
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
                     return result.error(
@@ -91,6 +101,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         null
                     )
                 }
+
                 // Launch a coroutine in the IO context
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
@@ -99,11 +110,13 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
 
                         when (authResult) {
                             is Luscii.AuthenticateResult.Success -> {
+                                isAuthenticated = true
                                 result.success(null);
                                 return@launch
                             }
 
                             is Luscii.AuthenticateResult.Invalid -> {
+                                isAuthenticated = false
                                 result.error(
                                     LusciiFlutterSdkError.UNAUTHORIZED.code,
                                     LusciiFlutterSdkError.UNAUTHORIZED.message,
@@ -139,6 +152,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         val actions = rawActions.map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
+                        isAuthenticated = false
                         result.error(
                             LusciiFlutterSdkError.UNAUTHORIZED.code,
                             LusciiFlutterSdkError.UNAUTHORIZED.message,
@@ -173,6 +187,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         val actions = rawActions.map { it.toMap() }
                         result.success(actions)
                     } catch (e: UnauthenticatedException) {
+                        isAuthenticated = false
                         result.error(
                             LusciiFlutterSdkError.UNAUTHORIZED.code,
                             LusciiFlutterSdkError.UNAUTHORIZED.message,
@@ -207,6 +222,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     val actions = rawActions.map { it.toMap() }
                     result.success(actions)
                 } catch (e: UnauthenticatedException) {
+                    isAuthenticated = false
                     result.error(
                         LusciiFlutterSdkError.UNAUTHORIZED.code,
                         LusciiFlutterSdkError.UNAUTHORIZED.message,

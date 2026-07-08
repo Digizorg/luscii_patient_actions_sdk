@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.2+1] - 2026-07-06
+
+### Fixed
+- Made Android `initialize` idempotent in the plugin: if already initialized, it now returns success without creating a new SDK instance.
+- Made Android authentication idempotent in the plugin: if already authenticated, `authenticate` now returns success without calling the native SDK again.
+- Reset tracked authentication state on first `initialize` and when native calls return `UnauthenticatedException`.
+
+### Changed
+- Updated platform interface dependency constraint to `^0.10.2`.
+
 ## [0.10.1+1] - 2026-06-29
 
 ### Changed
