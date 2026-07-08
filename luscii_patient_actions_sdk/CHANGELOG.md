@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0+1] - 2026-07-08
+
+### Added
+- iOS: Swift Package Manager (SPM) support in the iOS implementation package.
+
+### Changed
+- Bumped federated package dependencies to `^0.11.0`.
+- Bumped package version to `0.11.0+1`.
+
 ## [0.10.2+1] - 2026-07-06
 
 ### Changed
