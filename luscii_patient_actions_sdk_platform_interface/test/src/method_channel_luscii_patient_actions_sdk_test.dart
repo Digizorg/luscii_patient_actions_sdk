@@ -23,6 +23,8 @@ void main() {
                 return null;
               case 'authenticate':
                 return null;
+              case 'logout':
+                return null;
               case 'getTodayActions':
                 return <dynamic>['action1', 'action2'];
               case 'getSelfCareActions':
@@ -99,6 +101,27 @@ void main() {
           () => methodChannel.authenticate('test-api-key'),
           throwsA(isA<PlatformException>()),
         );
+      });
+    });
+
+    group('logout', () {
+      test('calls method channel without arguments', () async {
+        await methodChannel.logout();
+
+        expect(log, hasLength(1));
+        expect(log.first.method, 'logout');
+        expect(log.first.arguments, isNull);
+      });
+
+      test('throws PlatformException on failure', () async {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(methodChannel.methodChannel, (
+              methodCall,
+            ) async {
+              throw PlatformException(code: 'ERROR', message: 'logout failed');
+            });
+
+        expect(() => methodChannel.logout(), throwsA(isA<PlatformException>()));
       });
     });
 

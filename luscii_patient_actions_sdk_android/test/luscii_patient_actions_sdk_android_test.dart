@@ -31,6 +31,8 @@ void main() {
                 return null;
               case 'authenticate':
                 return null;
+              case 'logout':
+                return null;
               case 'getTodayActions':
                 return mockActions;
               case 'getSelfCareActions':
@@ -82,6 +84,14 @@ void main() {
       expect(log, hasLength(1));
       expect(log.first.method, 'authenticate');
       expect(log.first.arguments, apiKey);
+    });
+
+    test('logout sends correct method call', () async {
+      await lusciiPatientActionsSdk.logout();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'logout');
+      expect(log.first.arguments, isNull);
     });
 
     test('getTodayActions returns list of actions', () async {

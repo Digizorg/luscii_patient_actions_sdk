@@ -35,6 +35,11 @@ class MethodChannelLusciiPatientActionsSdk
   }
 
   @override
+  Future<void> logout() async {
+    await methodChannel.invokeMethod<void>('logout');
+  }
+
+  @override
   Future<List<dynamic>> getTodayActions() async {
     final actions = await methodChannel.invokeMethod<List<dynamic>>(
       'getTodayActions',

@@ -18,6 +18,11 @@ class LusciiPatientActionsSdkMock extends LusciiPatientActionsSdkPlatform {
   }
 
   @override
+  Future<void> logout() {
+    return Future.value();
+  }
+
+  @override
   Future<List<dynamic>> getTodayActions() {
     return Future.value([
       {

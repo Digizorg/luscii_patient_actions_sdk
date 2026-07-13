@@ -76,6 +76,10 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 registerLauncherIfReady()
                 result.success(null)
             }
+            "logout" -> {
+                clearLocalSdkState(resetSdkInstance = true)
+                result.success(null)
+            }
             "authenticate" -> {
                 if (isAuthenticated) {
                     return result.success(null)
@@ -352,6 +356,22 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         }
                     }
                 }
+        }
+    }
+
+    private fun clearLocalSdkState(resetSdkInstance: Boolean) {
+        isAuthenticated = false
+        pendingAction = null
+        fetchedTodaysTasks = null
+        fetchedSelfCareTasks = null
+        fetchedExtraTasks = null
+
+        if (resetSdkInstance) {
+            actionFlowLauncher?.unregister()
+            disclaimerLauncher?.unregister()
+            actionFlowLauncher = null
+            disclaimerLauncher = null
+            luscii = null
         }
     }
 

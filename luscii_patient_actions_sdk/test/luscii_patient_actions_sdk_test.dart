@@ -140,6 +140,41 @@ void main() {
       expect(failure.exception.reason, 'Invalid API key');
     });
 
+    test('logout - success', () async {
+      when(() => lusciiPatientActionsSdkPlatform.logout()).thenAnswer(
+        (_) => Future.value(),
+      );
+
+      final result = await logout();
+
+      verify(() => lusciiPatientActionsSdkPlatform.logout()).called(1);
+
+      expect(
+        result,
+        isA<LusciiSdkSuccess<LusciiSdkNoResponse, LusciiSdkError>>(),
+      );
+      final success =
+          result as LusciiSdkSuccess<LusciiSdkNoResponse, LusciiSdkError>;
+      expect(success.value, isA<LusciiSdkNoResponse>());
+    });
+
+    test('logout - platform exception', () async {
+      when(() => lusciiPatientActionsSdkPlatform.logout()).thenThrow(
+        PlatformException(code: '3', message: 'Unauthorized'),
+      );
+
+      final result = await logout();
+
+      expect(
+        result,
+        isA<LusciiSdkFailure<LusciiSdkNoResponse, LusciiSdkError>>(),
+      );
+      final failure =
+          result as LusciiSdkFailure<LusciiSdkNoResponse, LusciiSdkError>;
+      expect(failure.exception.type, LusciiSdkErrorType.unauthorized);
+      expect(failure.exception.reason, 'Unauthorized');
+    });
+
     test('getTodayActions - success', () async {
       when(
         () => lusciiPatientActionsSdkPlatform.getTodayActions(),
