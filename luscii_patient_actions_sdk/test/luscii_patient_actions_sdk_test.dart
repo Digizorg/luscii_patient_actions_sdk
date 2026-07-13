@@ -140,6 +140,34 @@ void main() {
       expect(failure.exception.reason, 'Invalid API key');
     });
 
+    test('authenticate - re-authentication not allowed', () async {
+      const apiKey = 'test-api-key';
+
+      when(
+        () => lusciiPatientActionsSdkPlatform.authenticate(any()),
+      ).thenThrow(
+        PlatformException(
+          code: '7',
+          message:
+              'Re-authentication is not allowed after launching an action. '
+              'Call logout() and initialize() first',
+        ),
+      );
+
+      final result = await authenticate(apiKey);
+
+      expect(
+        result,
+        isA<LusciiSdkFailure<LusciiSdkNoResponse, LusciiSdkError>>(),
+      );
+      final failure =
+          result as LusciiSdkFailure<LusciiSdkNoResponse, LusciiSdkError>;
+      expect(
+        failure.exception.type,
+        LusciiSdkErrorType.reauthenticationNotAllowed,
+      );
+    });
+
     test('logout - success', () async {
       when(() => lusciiPatientActionsSdkPlatform.logout()).thenAnswer(
         (_) => Future.value(),
