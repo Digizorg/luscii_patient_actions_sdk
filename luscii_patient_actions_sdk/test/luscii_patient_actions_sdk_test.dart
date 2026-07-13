@@ -143,9 +143,7 @@ void main() {
     test('authenticate - re-authentication not allowed', () async {
       const apiKey = 'test-api-key';
 
-      when(
-        () => lusciiPatientActionsSdkPlatform.authenticate(any()),
-      ).thenThrow(
+      when(() => lusciiPatientActionsSdkPlatform.authenticate(any())).thenThrow(
         PlatformException(
           code: '7',
           message:
@@ -169,9 +167,9 @@ void main() {
     });
 
     test('logout - success', () async {
-      when(() => lusciiPatientActionsSdkPlatform.logout()).thenAnswer(
-        (_) => Future.value(),
-      );
+      when(
+        () => lusciiPatientActionsSdkPlatform.logout(),
+      ).thenAnswer((_) => Future.value());
 
       final result = await logout();
 
@@ -187,9 +185,9 @@ void main() {
     });
 
     test('logout - platform exception', () async {
-      when(() => lusciiPatientActionsSdkPlatform.logout()).thenThrow(
-        PlatformException(code: '3', message: 'Unauthorized'),
-      );
+      when(
+        () => lusciiPatientActionsSdkPlatform.logout(),
+      ).thenThrow(PlatformException(code: '3', message: 'Unauthorized'));
 
       final result = await logout();
 
