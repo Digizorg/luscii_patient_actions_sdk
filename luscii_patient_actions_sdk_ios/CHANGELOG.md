@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.3+1] - 2026-07-14
+
+### Added
+- Added support for logging out and clearing the iOS SDK session.
+
 ## [0.10.2+1] - 2026-07-06
 
 ### Changed
