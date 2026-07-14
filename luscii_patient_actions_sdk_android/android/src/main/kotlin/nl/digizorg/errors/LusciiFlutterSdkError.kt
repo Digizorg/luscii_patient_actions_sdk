@@ -7,5 +7,5 @@ enum class LusciiFlutterSdkError(val code: String, val message: String) {
     UNAUTHORIZED("3", "Unauthorized"),
     NOT_INITIALIZED("4", "Luscii SDK not initialized"),
     UNSUPPORTED_VERSION("5", "Luscii SDK requires iOS 17.0 or higher"), // Only used by iOS
-    REAUTHENTICATION_NOT_ALLOWED("7", "Re-authentication is not allowed after launching an action in this app session. Restart the app"),
+    REAUTHENTICATION_NOT_ALLOWED("6", "Re-authentication is not allowed after launching an action in this app session. Restart the app"),
 }

@@ -145,7 +145,7 @@ void main() {
 
       when(() => lusciiPatientActionsSdkPlatform.authenticate(any())).thenThrow(
         PlatformException(
-          code: '7',
+          code: '6',
           message:
               'Re-authentication is not allowed after launching an action. '
               'Call logout() and initialize() first',

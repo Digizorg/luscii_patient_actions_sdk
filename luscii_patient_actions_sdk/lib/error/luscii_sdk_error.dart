@@ -45,7 +45,7 @@ enum LusciiSdkErrorType {
         return LusciiSdkErrorType.unauthorized;
       case '4':
         return LusciiSdkErrorType.invalidResponse;
-      case '7':
+      case '6':
         return LusciiSdkErrorType.reauthenticationNotAllowed;
       default:
         return LusciiSdkErrorType.unknown;
