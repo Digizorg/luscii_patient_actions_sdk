@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'luscii_patient_actions_sdk_ios'
-  s.version          = '0.10.1'
+  s.version          = '0.11.0'
   s.summary          = 'An iOS implementation of the luscii_patient_actions_sdk plugin.'
   s.description      = <<-DESC
   An iOS implementation of the luscii_patient_actions_sdk plugin.
@@ -12,7 +12,8 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Digizorg' => 'info@digizorg.app' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  # Sources live under the Swift Package layout so SwiftPM and CocoaPods can share them.
+  s.source_files     = 'luscii_patient_actions_sdk_ios/Sources/luscii_patient_actions_sdk_ios/**/*.swift'
   s.dependency       'Flutter'
   s.platform         = :ios, '15.5'
   s.swift_version    = '5.0'
