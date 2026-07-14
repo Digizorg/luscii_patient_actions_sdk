@@ -43,6 +43,8 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
     private var pendingAction: Action? = null
 
     private var isAuthenticated: Boolean = false
+    private var lastAuthenticatedApiKey: String? = null
+    private var hasLaunchedActionSinceAuthentication: Boolean = false
 
     private var fetchedTodaysTasks: List<Action>? = null
     private var fetchedSelfCareTasks: List<Action>? = null
@@ -76,10 +78,11 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                 registerLauncherIfReady()
                 result.success(null)
             }
+            "logout" -> {
+                clearLocalSdkState(resetSdkInstance = true)
+                result.success(null)
+            }
             "authenticate" -> {
-                if (isAuthenticated) {
-                    return result.success(null)
-                }
                 // Check if the luscii instance is initialized
                 if (luscii == null) {
                     return result.error(
@@ -102,6 +105,18 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                     )
                 }
 
+                if (hasLaunchedActionSinceAuthentication) {
+                    return result.error(
+                        LusciiFlutterSdkError.REAUTHENTICATION_NOT_ALLOWED.code,
+                        LusciiFlutterSdkError.REAUTHENTICATION_NOT_ALLOWED.message,
+                        null
+                    )
+                }
+
+                if (isAuthenticated && lastAuthenticatedApiKey == value) {
+                    return result.success(null)
+                }
+
                 // Launch a coroutine in the IO context
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
@@ -111,12 +126,14 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         when (authResult) {
                             is Luscii.AuthenticateResult.Success -> {
                                 isAuthenticated = true
+                                lastAuthenticatedApiKey = value
                                 result.success(null);
                                 return@launch
                             }
 
                             is Luscii.AuthenticateResult.Invalid -> {
                                 isAuthenticated = false
+                                lastAuthenticatedApiKey = null
                                 result.error(
                                     LusciiFlutterSdkError.UNAUTHORIZED.code,
                                     LusciiFlutterSdkError.UNAUTHORIZED.message,
@@ -126,6 +143,8 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                             }
                         }
                     } catch (e: Exception) {
+                        isAuthenticated = false
+                        lastAuthenticatedApiKey = null
                         // Handle any exception and send an error response
                         result.error(
                             LusciiFlutterSdkError.UNKNOWN.code,
@@ -342,6 +361,7 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         is DisclaimerResult.Accepted -> {
                             // Launch the pending action if disclaimer was accepted
                             pendingAction?.let { action ->
+                                hasLaunchedActionSinceAuthentication = true
                                 actionFlowLauncher?.launch(action)
                                 pendingAction = null
                             }
@@ -352,6 +372,23 @@ class LusciiPatientActionsSdkPlugin : FlutterPlugin, MethodCallHandler, Activity
                         }
                     }
                 }
+        }
+    }
+
+    private fun clearLocalSdkState(resetSdkInstance: Boolean) {
+        isAuthenticated = false
+        lastAuthenticatedApiKey = null
+        pendingAction = null
+        fetchedTodaysTasks = null
+        fetchedSelfCareTasks = null
+        fetchedExtraTasks = null
+
+        if (resetSdkInstance) {
+            actionFlowLauncher?.unregister()
+            disclaimerLauncher?.unregister()
+            actionFlowLauncher = null
+            disclaimerLauncher = null
+            luscii = null
         }
     }
 

@@ -159,6 +159,29 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> logoutSdk() async {
+    setState(() {
+      errorMessage = null;
+    });
+
+    debugPrint('Logging out from SDK...');
+    final result = await luscii_sdk.logout();
+
+    switch (result) {
+      case LusciiSdkSuccess():
+        debugPrint('Logged out successfully');
+        setState(() {
+          actions = null;
+        });
+      case LusciiSdkFailure(exception: final exception):
+        debugPrint('Logout failed');
+        debugPrint('Error: $exception');
+        setState(() {
+          errorMessage = 'Error: ${exception.reason}';
+        });
+    }
+  }
+
   Future<void> getSelfCareActions() async {
     // Reset error state before making the request
     setState(() {
@@ -235,6 +258,10 @@ class _HomePageState extends State<HomePage> {
           TextButton(
             onPressed: isLoading ? null : () => runWithLoading(authenticateSdk),
             child: const Text('Authenticate SDK'),
+          ),
+          TextButton(
+            onPressed: isLoading ? null : () => runWithLoading(logoutSdk),
+            child: const Text('Logout SDK'),
           ),
           TextButton(
             onPressed: isLoading ? null : () => runWithLoading(getTodayActions),

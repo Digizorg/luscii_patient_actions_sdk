@@ -79,6 +79,12 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
           }
         }
       }
+    case "logout":
+      _luscii = nil
+      fetchedTodaysTasks = nil
+      fetchedSelfCareTasks = nil
+      fetchedExtraTasks = nil
+      return result(nil)
     case "getTodayActions":
       Task {
         do {

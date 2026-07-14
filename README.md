@@ -169,10 +169,13 @@ As of `0.10.2+1`, Android authentication is stateful inside the plugin:
 - `initialize(...)` is idempotent. If the SDK instance already exists, the plugin returns success without creating a new instance.
 - After a successful `authenticate(apiKey)`, additional `authenticate` calls return success immediately.
 - The plugin does not call the native Luscii SDK `authenticate` again while it is already authenticated.
+- Call `logout()` when switching users. On Android this clears the local SDK instance and cached state.
+- After launching an action flow, Android blocks further `authenticate` calls for the rest of the app session as a temporary safeguard. Restart the app before authenticating again.
 
 | Function               | iOS Support | Android Support |
 |------------------------|-------------|-----------------|
 | `authenticate(String apiKey)` | ✅           | ✅               |
+| `logout()`                    | ✅           | ✅               |
 | `getTodayActions()`         | ✅           | ✅               |
 | `launchAction(String actionId)` | ✅           | ✅               |
 | `actionFlowStream()`   | ✅           | ✅ 
