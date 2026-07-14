@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.11.0+1] - 2026-07-08
+## [0.11.0+1] - 2026-07-14
 
 ### Changed
 - Bumped version to `0.11.0+1` to align with the federated package release.
 - Updated platform interface dependency constraint to `^0.11.0`.
+
+## [0.10.3+1] - 2026-07-14
+
+### Added
+- Added support for logging out and clearing the Android SDK session.
 
 ## [0.10.2+1] - 2026-07-06
 

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.11.0+1] - 2026-07-08
+## [0.11.0+1] - 2026-07-14
 
 ### Added
 - Swift Package Manager (SPM) support via a `Package.swift` manifest, so the iOS implementation can be consumed through SwiftPM alongside CocoaPods. Sources now live under the Swift Package layout shared by both.
@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bumped package and podspec version to `0.11.0`.
 - Updated platform interface dependency constraint to `^0.11.0`.
+
+## [0.10.3+1] - 2026-07-14
+
+### Added
+- Added support for logging out and clearing the iOS SDK session.
 
 ## [0.10.2+1] - 2026-07-06
 

@@ -44,6 +44,9 @@ abstract class LusciiPatientActionsSdkPlatform extends PlatformInterface {
   /// Authenticate the user with the given token.
   Future<void> authenticate(String apiKey);
 
+  /// Reset local SDK state and clear the active user session.
+  Future<void> logout();
+
   /// Get today's actions for the authenticated user.
   Future<List<dynamic>> getTodayActions();
 

@@ -29,6 +29,9 @@ enum LusciiSdkErrorType {
   /// The user is not authorized to perform the requested action.
   unauthorized,
 
+  /// Re-authentication is blocked after launching an action.
+  reauthenticationNotAllowed,
+
   /// The response from the SDK was invalid.
   invalidResponse;
 
@@ -42,6 +45,8 @@ enum LusciiSdkErrorType {
         return LusciiSdkErrorType.unauthorized;
       case '4':
         return LusciiSdkErrorType.invalidResponse;
+      case '6':
+        return LusciiSdkErrorType.reauthenticationNotAllowed;
       default:
         return LusciiSdkErrorType.unknown;
     }

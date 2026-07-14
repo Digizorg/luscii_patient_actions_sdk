@@ -39,6 +39,16 @@ Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> authenticate(
   }
 }
 
+/// Reset local SDK state and clear the active user session.
+Future<LusciiSdkResult<LusciiSdkNoResponse, LusciiSdkError>> logout() async {
+  try {
+    await _platform.logout();
+    return const LusciiSdkSuccess(LusciiSdkNoResponse());
+  } on PlatformException catch (e) {
+    return LusciiSdkFailure(LusciiSdkError.fromErrorCode(e.code, e.message));
+  }
+}
+
 /// Get the today actions for the authenticated user.
 Future<LusciiSdkResult<List<LusciiSdkAction>, LusciiSdkError>>
 getTodayActions() async {
