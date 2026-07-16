@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.1+1] - 2026-07-16
+
+### Fixed
+- iOS: Pinned the native `actions-sdk-ios` dependency to exactly `2.2.0`, preventing unintended upgrades to newer minor versions such as `2.3.0`.
+
+### Changed
+- Bumped package version to `0.11.1+1`.
+
 ## [0.11.0+1] - 2026-07-14
 
 ### Added

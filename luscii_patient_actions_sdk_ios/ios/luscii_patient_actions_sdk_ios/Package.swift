@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         // The Actions SDK. The `ActionsKit` product bundles the Actions, Centraal,
         // HTTPii and Measurements xcframeworks, so `import Actions` works transitively.
-        .package(url: "https://github.com/Luscii/actions-sdk-ios.git", from: "2.2.0")
+        .package(url: "https://github.com/Luscii/actions-sdk-ios.git", exact: "2.2.0")
     ],
     targets: [
         .target(
