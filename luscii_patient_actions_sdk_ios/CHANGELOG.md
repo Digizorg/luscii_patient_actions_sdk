@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2+1] - 2026-11-27
+
+### Fixed
+- Queue ActionsKit calls so refreshing and opening actions run one at a time.
+- Return a success result to Flutter after ActionsKit opens an action.
+
 ## [0.11.1+1] - 2026-07-16
 
 ### Fixed
