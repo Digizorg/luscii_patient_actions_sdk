@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2+1] - 2026-11-27
+
+### Fixed
+- Run Luscii SDK calls one at a time on iOS to avoid overlapping action requests.
+- Let Flutter know when an iOS action opens so the app can clear its loader.
+
 ## [0.11.1+1] - 2026-07-16
 
 ### Fixed

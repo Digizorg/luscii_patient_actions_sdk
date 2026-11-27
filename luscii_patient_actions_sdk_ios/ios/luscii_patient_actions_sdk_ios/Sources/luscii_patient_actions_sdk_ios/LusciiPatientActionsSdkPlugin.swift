@@ -3,6 +3,8 @@ import UIKit
 @preconcurrency import Actions
 
 public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
+  @MainActor private static var pendingSDKCall: Task<Void, Never>?
+
   private var _luscii: Any?
   
   private var fetchedTodaysTasks: [Action]?
@@ -37,6 +39,20 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       return
     }
 
+    // Flutter delivers this channel on the main thread. Each task waits for
+    // the previous call to finish so ActionsKit requests do not overlap.
+    MainActor.assumeIsolated {
+      let previousCall = Self.pendingSDKCall
+      Self.pendingSDKCall = Task { @MainActor in
+        await previousCall?.value
+        await handleSDKCall(call, result: result)
+      }
+    }
+  }
+
+  @available(iOS 17.0, *)
+  @MainActor
+  private func handleSDKCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) async {
     switch call.method {
     case "initialize":
       if let arguments = call.arguments as? [String: Any],
@@ -66,17 +82,15 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
         let error = LusciiFlutterSdkError.invalidArguments("No API key provided")
         return result(error.flutterError)
       }
-      Task {
-        do {
-          try await luscii.authenticate(apiKey: value)
-          // Return void/nil if the call succeeds
-          return result(nil)
-        } catch {
-          if error is LusciiAuthenticationError {
-            return handleAuthenticationError(error: error, result: result)
-          } else {
-            return result(LusciiFlutterSdkError.unknown.flutterError)
-          }
+      do {
+        try await luscii.authenticate(apiKey: value)
+        // Return void/nil if the call succeeds
+        return result(nil)
+      } catch {
+        if error is LusciiAuthenticationError {
+          return handleAuthenticationError(error: error, result: result)
+        } else {
+          return result(LusciiFlutterSdkError.unknown.flutterError)
         }
       }
     case "logout":
@@ -86,18 +100,16 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
       fetchedExtraTasks = nil
       return result(nil)
     case "getTodayActions":
-      Task {
-        do {
-          let actions = try await luscii.todayActions()
-          fetchedTodaysTasks = actions
-          let convertedActions = actions.map { $0.toMap() }
-          return result(convertedActions)
-        } catch {
-          if error is LusciiAuthenticationError {
-            return handleAuthenticationError(error: error, result: result)
-          } else {
-            return result(LusciiFlutterSdkError.unknown.flutterError)
-          }
+      do {
+        let actions = try await luscii.todayActions()
+        fetchedTodaysTasks = actions
+        let convertedActions = actions.map { $0.toMap() }
+        return result(convertedActions)
+      } catch {
+        if error is LusciiAuthenticationError {
+          return handleAuthenticationError(error: error, result: result)
+        } else {
+          return result(LusciiFlutterSdkError.unknown.flutterError)
         }
       }
     case "launchAction":
@@ -105,80 +117,63 @@ public class LusciiPatientActionsSdkPlugin: NSObject, FlutterPlugin {
         let error = LusciiFlutterSdkError.invalidArguments("Arugment type is not String")
         return result(error.flutterError)
       }
-      Task {
-        do {
-          let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? []) + (fetchedExtraTasks ?? [])
-          let matchingAction: Action
-          if let match = existingActions.first(where: { $0.id.uuidString == actionId }) {
-            matchingAction = match
-          } else {
-            let todayActions = try await luscii.todayActions()
-            let selfCareActions = try await luscii.selfCareActions()
-            let extraActions = try await luscii.extraActions()
-            let fetchedActions = selfCareActions + todayActions + extraActions
-            guard let match = fetchedActions.first(where: { $0.id.uuidString == actionId }) else {
-              let error = LusciiFlutterSdkError.invalidArguments("Action not found")
-              return result(error.flutterError)
-            }
-            matchingAction = match
-          }
-          let rootViewController = await MainActor.run {
-              UIApplication.shared.connectedScenes
-                  .compactMap { $0 as? UIWindowScene }
-                  .flatMap { $0.windows }
-                  .first { $0.isKeyWindow }?.rootViewController
-          }
-          guard let rootViewController else {
-            let error = LusciiFlutterSdkError.invalidArguments("No key window found")
+      do {
+        let existingActions = (fetchedTodaysTasks ?? []) + (fetchedSelfCareTasks ?? []) + (fetchedExtraTasks ?? [])
+        let matchingAction: Action
+        if let match = existingActions.first(where: { $0.id.uuidString == actionId }) {
+          matchingAction = match
+        } else {
+          let todayActions = try await luscii.todayActions()
+          let selfCareActions = try await luscii.selfCareActions()
+          let extraActions = try await luscii.extraActions()
+          let fetchedActions = selfCareActions + todayActions + extraActions
+          guard let match = fetchedActions.first(where: { $0.id.uuidString == actionId }) else {
+            let error = LusciiFlutterSdkError.invalidArguments("Action not found")
             return result(error.flutterError)
           }
-          await MainActor.run {
-            do {
-              try luscii.launchActionFlow(for: matchingAction, on: rootViewController)
-            } catch {
-              if error is LusciiAuthenticationError {
-                return handleAuthenticationError(error: error, result: result)
-              } else {
-                return result(LusciiFlutterSdkError.unknown.flutterError)
-              }
-            }
-          }
-        } catch {
-          if error is LusciiAuthenticationError {
-            return handleAuthenticationError(error: error, result: result)
-          } else {
-            return result(LusciiFlutterSdkError.unknown.flutterError)
-          }
+          matchingAction = match
+        }
+        let rootViewController = UIApplication.shared.connectedScenes
+          .compactMap { $0 as? UIWindowScene }
+          .flatMap { $0.windows }
+          .first { $0.isKeyWindow }?.rootViewController
+        guard let rootViewController else {
+          let error = LusciiFlutterSdkError.invalidArguments("No key window found")
+          return result(error.flutterError)
+        }
+        try luscii.launchActionFlow(for: matchingAction, on: rootViewController)
+        return result(nil)
+      } catch {
+        if error is LusciiAuthenticationError {
+          return handleAuthenticationError(error: error, result: result)
+        } else {
+          return result(LusciiFlutterSdkError.unknown.flutterError)
         }
       }
     case "getSelfCareActions":
-      Task {
-        do {
-          let actions = try await luscii.selfCareActions()
-          fetchedSelfCareTasks = actions
-          let convertedActions = actions.map { $0.toMap() }
-          return result(convertedActions)
-        } catch {
-          if error is LusciiAuthenticationError {
-            return handleAuthenticationError(error: error, result: result)
-          } else {
-            return result(LusciiFlutterSdkError.unknown.flutterError)
-          }
+      do {
+        let actions = try await luscii.selfCareActions()
+        fetchedSelfCareTasks = actions
+        let convertedActions = actions.map { $0.toMap() }
+        return result(convertedActions)
+      } catch {
+        if error is LusciiAuthenticationError {
+          return handleAuthenticationError(error: error, result: result)
+        } else {
+          return result(LusciiFlutterSdkError.unknown.flutterError)
         }
       }
     case "getExtraActions":
-      Task {
-        do {
-          let actions = try await luscii.extraActions()
-          fetchedExtraTasks = actions
-          let convertedActions = actions.map { $0.toMap() }
-          return result(convertedActions)
-        } catch {
-          if error is LusciiAuthenticationError {
-            return handleAuthenticationError(error: error, result: result)
-          } else {
-            return result(LusciiFlutterSdkError.unknown.flutterError)
-          }
+      do {
+        let actions = try await luscii.extraActions()
+        fetchedExtraTasks = actions
+        let convertedActions = actions.map { $0.toMap() }
+        return result(convertedActions)
+      } catch {
+        if error is LusciiAuthenticationError {
+          return handleAuthenticationError(error: error, result: result)
+        } else {
+          return result(LusciiFlutterSdkError.unknown.flutterError)
         }
       }
     default:
